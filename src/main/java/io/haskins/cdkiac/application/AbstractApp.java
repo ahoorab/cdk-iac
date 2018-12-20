@@ -1,4 +1,4 @@
-package io.haskins.cdkiac.app;
+package io.haskins.cdkiac.application;
 
 import io.haskins.cdkiac.core.AppProps;
 
@@ -27,6 +27,16 @@ abstract class AbstractApp {
                 break;
         }
     }
+
+    protected String getUniqueId() {
+
+        return new StringBuilder()
+                .append(appProps.getPropAsString("dtap")).append("-")
+                .append(appProps.getPropAsString("platform")).append("-")
+                .append(appProps.getPropAsString("app_id"))
+                .toString();
+    }
+
 
     private void loadDtapProperties(String dtap) throws IOException {
 

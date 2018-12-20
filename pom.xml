@@ -11,6 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cdk.version>0.21.0</cdk.version>
     </properties>
 
     <build>
@@ -52,32 +53,52 @@
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>cdk</artifactId>
-            <version>0.20.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>ec2</artifactId>
-            <version>0.20.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>iam</artifactId>
-            <version>0.20.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>autoscaling</artifactId>
-            <version>0.20.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>elasticbeanstalk</artifactId>
-            <version>0.20.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>apigateway</artifactId>
-            <version>0.20.0</version>
+            <version>${cdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>lambda</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>rds</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>logs</artifactId>
+            <version>${cdk.version}</version>
         </dependency>
 
         <dependency>

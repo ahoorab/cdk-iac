@@ -1,4 +1,4 @@
-# cdk-iac
+# cdk-iac - Still in development / idea stage
 
 The idea behind this project is to take the recently announced [CDK](https://awslabs.github.io/aws-cdk/index.html)
 and try and build a multiple application management tool around it.
@@ -23,3 +23,9 @@ the stack for the DTAP.
 
 Currently I have hardcoded a DTAP and platform in the app.sh file, these should ideally be passed in as command line
 arguments.
+
+## usage
+To perform a CDK action against one of your applications you would do the following 
+
+```./cdk-iac.sh -c synth -a TestApp -d dev -p a```
+
