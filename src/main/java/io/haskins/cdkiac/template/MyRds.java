@@ -1,24 +1,19 @@
-package io.haskins.cdkiac.application;
+package io.haskins.cdkiac.template;
 
 import io.haskins.cdkiac.stack.infrastructure.RDS;
 import software.amazon.awscdk.App;
 
-import java.io.IOException;
+public class MyRds extends CdkIacApp {
 
-public class MyRds extends AbstractApp {
-
-    private MyRds(String[] args) throws IOException {
-
-        populateAppProps(args);
-        setAppProperties();
-
-        App app = new App();
-        new RDS(app, getUniqueId(), appProps);
-        app.run();
+    private MyRds(String[] args) {
+        super(args);
     }
 
-    private void setAppProperties() {
-        appProps.addProp("app_id", "my-rds");
+    void defineStacks(App app) {
+        new RDS(app, getUniqueId(), appProps);
+    }
+
+    void setAppProperties() {
         appProps.addProp("rds_storage", "10");
         appProps.addProp("rds_ec2", "db.t2.medium");
         appProps.addProp("rds_subnet", "subnet-group");
@@ -28,7 +23,7 @@ public class MyRds extends AbstractApp {
         appProps.addProp("rds_param_group", "param-group");
     }
 
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) {
         new MyRds(args);
     }
 }

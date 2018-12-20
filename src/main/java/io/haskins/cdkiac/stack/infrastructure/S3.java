@@ -21,12 +21,17 @@ public class S3 extends Stack {
 
         String uniqueId = appProps.getUniqueId();
 
-        CfnBucket normal = new CfnBucket(this, "mybucket", CfnBucketProps.builder()
+        /*
+         * Bucket with Versioning
+         */
+        new CfnBucket(this, "mybucket", CfnBucketProps.builder()
                 .withBucketName(uniqueId)
                 .withVersioningConfiguration(CfnBucket.VersioningConfigurationProperty.builder()
                         .withStatus("Enabled")
                         .build())
                 .build());
+
+
 
         List<Object> corsRules = Arrays.asList(
                 ImmutableMap.of("AllowedHeaders",  Collections.singletonList("Authorization")),
@@ -35,7 +40,10 @@ public class S3 extends Stack {
                 ImmutableMap.of("MaxAge", 3000)
         );
 
-        CfnBucket webhosting = new CfnBucket(this, "mybucket", CfnBucketProps.builder()
+        /*
+          Bucket configure for Static Hosting
+         */
+        new CfnBucket(this, "mybucket", CfnBucketProps.builder()
                 .withBucketName(uniqueId)
                 .withWebsiteConfiguration(CfnBucket.WebsiteConfigurationProperty.builder()
                         .withIndexDocument("index.html")

@@ -333,6 +333,5 @@ public class VpcWithPeering extends Stack {
                 .withMinSize("1")
                 .withVpcZoneIdentifier(Arrays.asList(subnetPublicA.getSubnetId(),subnetPublicB.getSubnetId(),subnetPublicC.getSubnetId()))
                 .build());
-
     }
 }

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Stack that provisions an Elastic Beanstalk application that sits behind API Gateway
+ * Stack that provisions an Elastic Beanstalk template that sits behind API Gateway
  */
 public class BeanstalkApiGateway extends Stack {
 
@@ -64,7 +64,7 @@ public class BeanstalkApiGateway extends Stack {
                 .withOptionSettings(Arrays.asList(
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:asg").withOptionName("Availability Zones").withValue("Any 3").build(),
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:environment").withOptionName("ServiceRole").withValue("aws-elasticbeanstalk-service-role").build(),
-                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:application:environment").withOptionName("SERVER_PORT").withValue("5000").build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:template:environment").withOptionName("SERVER_PORT").withValue("5000").build(),
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:healthreporting:system").withOptionName("SystemType").withValue("enhanced").build(),
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("InstanceType").withValue(appProps.getPropAsString("instance_type")).build(),
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("EC2KeyName").withValue(appProps.getPropAsString("keypair")).build(),

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Utility model class for holding dtap/platform/application specific configuration data
+ * Utility model class for holding dtap/platform/template specific configuration data
  */
 public class AppProps {
 

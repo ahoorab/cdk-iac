@@ -29,5 +29,11 @@ arguments.
 ## usage
 To perform a CDK action against one of your applications you would do the following 
 
-```./cdk-iac.sh -c synth -a TestApp -d dev -p a```
+```./cdk-iac.sh -c synth -t BeanstalkTemplate -a backoffice -d dev -p a```
+
+* -c CDK Command e.g synth, deploy
+* -t Name of the template to stamp out
+* -a Name to give the application
+* -d Your DTAP e.g. dev for your developer account
+* -p If you have multiple plaforms in a VPC then use this flag
 

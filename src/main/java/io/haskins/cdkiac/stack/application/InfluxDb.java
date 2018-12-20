@@ -20,9 +20,9 @@ import java.util.Map;
 
 public class InfluxDb extends Stack {
 
-    private VpcNetworkRef vpc;
+    private final VpcNetworkRef vpc;
 
-    private AppProps appProps;
+    private final AppProps appProps;
 
     public InfluxDb(final App parent, final String name, final AppProps appProps) {
         this(parent, name, null, appProps);

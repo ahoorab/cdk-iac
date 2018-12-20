@@ -8,7 +8,6 @@ import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.rds.CfnDBInstance;
 import software.amazon.awscdk.services.rds.CfnDBInstanceProps;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class RDS extends Stack {
@@ -39,7 +38,7 @@ public class RDS extends Stack {
         sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("myCidr")), new TcpPort(3306));
         sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("vpcCidr")), new TcpPort(3306));
 
-        CfnDBInstance rds = new CfnDBInstance(this, "Rds", CfnDBInstanceProps.builder()
+        new CfnDBInstance(this, "Rds", CfnDBInstanceProps.builder()
                 .withAllocatedStorage(appProps.getPropAsString("rds_storage"))
                 .withStorageType("gp2")
                 .withDbInstanceClass(appProps.getPropAsString("rds_ec2"))
