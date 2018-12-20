@@ -20,19 +20,16 @@ public class LambdaApiGateway extends Stack {
     private LambdaApiGateway(final App parent, final String name, final StackProps props, final AppProps appProps) {
         super(parent, name, props);
 
-        String provisionId = new StringBuilder()
-                .append(appProps.getPropAsString("dtap")).append("-")
-                .append(appProps.getPropAsString("platform")).append("-")
-                .append(appProps.getPropAsString("app_id")).toString();
+        String uniqueId = appProps.getUniqueId();
 
         Role appRole = new Role(this, "LambdaRole", RoleProps.builder()
-                .withRoleName(provisionId)
+                .withRoleName(uniqueId)
                 .withPath("/")
                 .withAssumedBy(new ServicePrincipal("lambda.amazonaws.com"))
                 .build());
 
         FunctionResource lambda = new FunctionResource(this, "LambdaFunction", FunctionResourceProps.builder()
-                .withFunctionName(provisionId)
+                .withFunctionName(uniqueId)
                 .withRuntime(appProps.getPropAsString("runtime"))
                 .withMemorySize(appProps.getPropAsInteger("memory_size"))
                 .withHandler(appProps.getPropAsString("handler"))
@@ -44,7 +41,7 @@ public class LambdaApiGateway extends Stack {
                 .build());
 
         RestApiResource restApi = new RestApiResource(this, "RestApi", RestApiResourceProps.builder()
-                .withName(provisionId)
+                .withName(uniqueId)
                 .build());
 
         Resource resource = new Resource(this, "RestApiResource", ResourceProps.builder()

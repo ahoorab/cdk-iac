@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VpcWithPeering  extends Stack {
+public class VpcWithPeering extends Stack {
 
     public VpcWithPeering(final App parent, final String name, final AppProps appProps) {
         this(parent, name, null, appProps);
@@ -30,7 +30,6 @@ public class VpcWithPeering  extends Stack {
 
     private VpcWithPeering(final App parent, final String name, final StackProps props, final AppProps appProps) {
         super(parent, name, props);
-
 
         VPCResource vpc = new VPCResource(this, "VPC", VPCResourceProps.builder()
                 .withCidrBlock(appProps.getPropAsString("vpc_cidr"))
@@ -211,7 +210,7 @@ public class VpcWithPeering  extends Stack {
                 .build());
 
 
-        new EIPResource(this, "NatEip");
+        EIPResource natEip = new EIPResource(this, "NatEip");
 
 
         new LogGroupResource(this, "NatLogGroup", LogGroupResourceProps.builder()
@@ -270,7 +269,7 @@ public class VpcWithPeering  extends Stack {
                 .withInstanceType("t3.micro")
                 .withKeyName(appProps.getPropAsString("keypair"))
                 .withSecurityGroups(Collections.singletonList(natSG.getSecurityGroupId()))
-                .withUserData(VpcNatCloudFormationHack.getUserData())
+                .withUserData(VpcNatCloudFormationHack.getUserData(natEip.getEipAllocationId(), rtPrivate.getRouteTableId(), name))
                 .build());
 
         natLaunch.addOverride("Metadata", VpcNatCloudFormationHack.getCloudFormationMetadata());
@@ -286,7 +285,7 @@ public class VpcWithPeering  extends Stack {
                 .build());
 
 
-        new EIPResource(this, "BastionEip");
+        EIPResource bastionEip = new EIPResource(this, "BastionEip");
 
         new LogGroupResource(this, "BastionLogGroup", LogGroupResourceProps.builder()
                 .withLogGroupName("vpc-bastion-logs")
@@ -321,7 +320,7 @@ public class VpcWithPeering  extends Stack {
                 .withInstanceType("t3.micro")
                 .withKeyName(appProps.getPropAsString("keypair"))
                 .withSecurityGroups(Collections.singletonList(bastionSg.getSecurityGroupId()))
-                .withUserData(VpcBastionCloudFormationHack.getUserData())
+                .withUserData(VpcBastionCloudFormationHack.getUserData(bastionEip.getEipAllocationId(), name))
                 .build());
 
         natLaunch.addOverride("Metadata", VpcBastionCloudFormationHack.getCloudFormationMetadata());

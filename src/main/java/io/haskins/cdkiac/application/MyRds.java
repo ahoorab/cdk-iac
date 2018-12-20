@@ -13,7 +13,7 @@ public class MyRds extends AbstractApp {
         setAppProperties();
 
         App app = new App();
-        new RDS(app, "my-rds", appProps);
+        new RDS(app, getUniqueId(), appProps);
         app.run();
     }
 

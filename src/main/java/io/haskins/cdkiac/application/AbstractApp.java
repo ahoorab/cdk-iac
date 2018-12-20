@@ -17,26 +17,17 @@ abstract class AbstractApp {
 
     void populateAppProps(String[] args) throws IOException {
 
-        switch(args.length) {
-            case 1:
-                loadDtapProperties(args[0]);
-                break;
-            case 2:
-                loadDtapProperties(args[0]);
-                loadPlatformProperties(String.format("%s-%s",args[0],args[1]));
-                break;
+        if (args.length == 1) {
+            loadDtapProperties(args[0]);
+        } else if (args.length == 2) {
+            loadDtapProperties(args[0]);
+            loadPlatformProperties(String.format("%s-%s", args[0], args[1]));
         }
     }
 
-    protected String getUniqueId() {
-
-        return new StringBuilder()
-                .append(appProps.getPropAsString("dtap")).append("-")
-                .append(appProps.getPropAsString("platform")).append("-")
-                .append(appProps.getPropAsString("app_id"))
-                .toString();
+    String getUniqueId() {
+        return appProps.getUniqueId();
     }
-
 
     private void loadDtapProperties(String dtap) throws IOException {
 

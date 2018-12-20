@@ -18,11 +18,7 @@ public class RDS extends Stack {
     private RDS(final App parent, final String name, final StackProps props, final AppProps appProps) {
         super(parent, name, props);
 
-        String provisionId = new StringBuilder()
-                .append(appProps.getPropAsString("dtap")).append("-")
-                .append(appProps.getPropAsString("platform")).append("-")
-                .append(appProps.getPropAsString("app_id")).toString();
-
+        String uniqueId = appProps.getUniqueId();
 
         VpcNetworkRef vpc = VpcNetworkRef.import_(this,"Vpc", VpcNetworkRefProps.builder()
                 .withVpcId(appProps.getPropAsString("vpcId"))
@@ -33,8 +29,8 @@ public class RDS extends Stack {
 
         SecurityGroup sg = new SecurityGroup(this,"RdsSecurityGroup", SecurityGroupProps.builder()
                 .withAllowAllOutbound(true)
-                .withDescription(provisionId)
-                .withGroupName(provisionId)
+                .withDescription(uniqueId)
+                .withGroupName(uniqueId)
                 .withVpc(vpc)
                 .build());
 
@@ -45,7 +41,7 @@ public class RDS extends Stack {
                 .withAllocatedStorage(appProps.getPropAsString("rds_storage"))
                 .withStorageType("gp2")
                 .withDbInstanceClass(appProps.getPropAsString("rds_ec2"))
-                .withDbInstanceIdentifier(provisionId)
+                .withDbInstanceIdentifier(uniqueId)
                 .withDbSubnetGroupName(appProps.getPropAsString("rds_subnet"))
                 .withEngine(appProps.getPropAsString("rds_engine"))
                 .withEngineVersion(appProps.getPropAsString("rds_version"))

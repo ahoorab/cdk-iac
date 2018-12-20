@@ -19,9 +19,7 @@ public class MyVpc extends AbstractApp {
 
     private void setAppProperties() {
         appProps.addProp("app_id", "vpc");
-
         appProps.addProp("vpc_cidr", "10.1.0.0/16");
-
         appProps.addProp("vpc_peer_id", "vpc-fff4e79b");
         appProps.addProp("vpc_peer_rt", "rtb-0a80336d");
     }

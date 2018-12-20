@@ -4,6 +4,9 @@ import software.amazon.awscdk.App;
 
 import java.io.IOException;
 
+/**
+ * Creates and InfluxDb Stack
+ */
 public class InfluxDb extends AbstractApp  {
 
     private InfluxDb(String[] args) throws IOException {
@@ -12,9 +15,7 @@ public class InfluxDb extends AbstractApp  {
         setAppProperties();
 
         App app = new App();
-
-        new io.haskins.cdkiac.stack.application.InfluxDb(app, "influx-db", appProps);
-
+        new io.haskins.cdkiac.stack.application.InfluxDb(app, getUniqueId(), appProps);
         app.run();
     }
 

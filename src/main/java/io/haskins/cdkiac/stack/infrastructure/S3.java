@@ -19,13 +19,10 @@ public class S3 extends Stack {
     private S3(final App parent, final String name, final StackProps props, final AppProps appProps) {
         super(parent, name, props);
 
-        String provisionId = new StringBuilder()
-                .append(appProps.getPropAsString("dtap")).append("-")
-                .append(appProps.getPropAsString("platform")).append("-")
-                .append(appProps.getPropAsString("app_id")).toString();
+        String uniqueId = appProps.getUniqueId();
 
         BucketResource normal = new BucketResource(this, "mybucket", BucketResourceProps.builder()
-                .withBucketName(provisionId)
+                .withBucketName(uniqueId)
                 .withVersioningConfiguration(BucketResource.VersioningConfigurationProperty.builder()
                         .withStatus("Enabled")
                         .build())
@@ -39,7 +36,7 @@ public class S3 extends Stack {
         );
 
         BucketResource webhosting = new BucketResource(this, "mybucket", BucketResourceProps.builder()
-                .withBucketName(provisionId)
+                .withBucketName(uniqueId)
                 .withWebsiteConfiguration(BucketResource.WebsiteConfigurationProperty.builder()
                         .withIndexDocument("index.html")
                         .withErrorDocument("error.html")

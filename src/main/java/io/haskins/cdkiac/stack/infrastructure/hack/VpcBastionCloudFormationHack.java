@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.*;
 
 /**
- * This here because CDK does not easily support CloudFormation Meta / CloudFormation::Init
+ * This here because CDK does not easily support CloudFormation Meta / CloudFormation::Init ... yet
  */
 public class VpcBastionCloudFormationHack {
 
@@ -64,16 +64,16 @@ public class VpcBastionCloudFormationHack {
         return metadata;
     }
 
-    public static String getUserData() {
+    public static String getUserData(String eip, String stackName) {
 
         StringBuilder userData = new StringBuilder();
         userData.append("#!/bin/bash -xe\n");
         userData.append("INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)\n");
         userData.append("aws --region eu-west-1 ec2 associate-address");
         userData.append(" --instance-id $INSTANCEID");
-        userData.append(" --allocation-id { \"Fn::GetAtt\": [ \"BastionEip\", \"AllocationId\" ] }");
+        userData.append(" --allocation-id ").append(eip);
         userData.append(" &&");
-        userData.append(" /opt/aws/bin/cfn-init -v --stack { \"Ref\": \"AWS::StackName\"} --resource BastionLaunchConfiguration --region eu-west-1\n");
+        userData.append(" /opt/aws/bin/cfn-init -v --stack ").append(stackName).append(" --resource BastionLaunchConfiguration --region eu-west-1\n");
 
         return new String(Base64.getEncoder().encode(userData.toString().getBytes()));
     }

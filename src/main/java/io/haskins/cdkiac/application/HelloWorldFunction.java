@@ -16,7 +16,7 @@ public class HelloWorldFunction extends AbstractApp {
         setAppProperties();
 
         App app = new App();
-        new LambdaApiGateway(app, "hellow-world-function", appProps);
+        new LambdaApiGateway(app, getUniqueId(), appProps);
         app.run();
     }
 
@@ -27,7 +27,6 @@ public class HelloWorldFunction extends AbstractApp {
         appProps.addProp("handler", "lambda_function.lambda_handler");
         appProps.addProp("code_bucket", "my-bucket");
         appProps.addProp("code_key", "hello-world-function.zip");
-
     }
 
     public static void main(final String[] args) throws IOException {

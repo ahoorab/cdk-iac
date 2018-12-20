@@ -32,41 +32,38 @@ public class BeanstalkApiGateway extends Stack {
     private BeanstalkApiGateway(final App parent, final String name, final StackProps props, final AppProps appProps) {
         super(parent, name, props);
 
-        String provisionId = new StringBuilder()
-                .append(appProps.getPropAsString("dtap")).append("-")
-                .append(appProps.getPropAsString("platform")).append("-")
-                .append(appProps.getPropAsString("app_id")).toString();
+        String uniqueId = appProps.getUniqueId();
 
         /*
          * at some point turn these in constructs
          */
         Role appRole = new Role(this, "ApplicationRole", RoleProps.builder()
-                .withRoleName(provisionId)
+                .withRoleName(uniqueId)
                 .withPath("/")
                 .withAssumedBy(new ServicePrincipal("ec2.amazonaws.com"))
                 .build());
 
         new Role(this, "JenkinsRole", RoleProps.builder()
-                .withRoleName(provisionId + "-jenkins")
+                .withRoleName(uniqueId + "-jenkins")
                 .withPath("/")
                 .withAssumedBy(new ServicePrincipal("ec2.amazonaws.com"))
                 .build());
 
 
         new InstanceProfileResource(this, "ApplicationInstanceProfile", InstanceProfileResourceProps.builder()
-                .withInstanceProfileName(provisionId)
+                .withInstanceProfileName(uniqueId)
                 .withPath("/")
                 .withRoles(Collections.singletonList(appRole.getRoleName()))
                 .build());
 
         ApplicationResource applicationResource = new ApplicationResource(this, "BeanstalkApplication", ApplicationResourceProps.builder()
-                .withApplicationName(provisionId)
+                .withApplicationName(uniqueId)
                 .build());
 
         new EnvironmentResource(this, "BeanstalkEnvironment", EnvironmentResourceProps.builder()
-                .withEnvironmentName(provisionId)
+                .withEnvironmentName(uniqueId)
                 .withSolutionStackName("64bit Amazon Linux 2018.03 v2.7.7 running Java 8")
-                .withCnamePrefix(provisionId)
+                .withCnamePrefix(uniqueId)
                 .withApplicationName(applicationResource.getApplicationName())
                 .withOptionSettings(Arrays.asList(
                         EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:autoscaling:asg").withOptionName("Availability Zones").withValue("Any 3").build(),
@@ -81,7 +78,7 @@ public class BeanstalkApiGateway extends Stack {
                 .build());
 
         RestApiResource restApi = new RestApiResource(this, "RestApi", RestApiResourceProps.builder()
-                .withName(provisionId)
+                .withName(uniqueId)
                 .build());
 
         Resource resource = new Resource(this, "RestApiResource", ResourceProps.builder()
@@ -99,7 +96,7 @@ public class BeanstalkApiGateway extends Stack {
                 .withIntegration(MethodResource.IntegrationProperty.builder()
                         .withIntegrationHttpMethod("ANY")
                         .withType("HTTP_PROXY")
-                        .withUri("http://" + provisionId + ".eu-west-1.elasticbeanstalk.com/{proxy}")
+                        .withUri("http://" + uniqueId + ".eu-west-1.elasticbeanstalk.com/{proxy}")
                         .build())
                 .build());
     }

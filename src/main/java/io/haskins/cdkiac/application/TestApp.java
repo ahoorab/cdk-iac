@@ -16,9 +16,7 @@ public class TestApp extends AbstractApp {
         setAppProperties();
 
         App app = new App();
-
-        new BeanstalkApiGateway(app, "test-application", appProps);
-
+        new BeanstalkApiGateway(app, getUniqueId(), appProps);
         app.run();
     }
 

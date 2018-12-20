@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.*;
 
 /**
- * This here because CDK does not easily support CloudFormation Meta / CloudFormation::Init
+ * This here because CDK does not easily support CloudFormation Meta / CloudFormation::Init ... yet
  */
 public class VpcNatCloudFormationHack {
 
@@ -64,14 +64,14 @@ public class VpcNatCloudFormationHack {
         return metadata;
     }
 
-    public static String getUserData() {
+    public static String getUserData(String eip, String routeTable, String stackName) {
 
         StringBuilder userData = new StringBuilder();
         userData.append("#!/bin/bash -xe\n");
         userData.append("INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)\n");
         userData.append("aws --region eu-west-1 ec2 associate-address");
         userData.append(" --instance-id $INSTANCEID");
-        userData.append(" --allocation-id { \"Fn::GetAtt\": [ \"NatEip\", \"AllocationId\" ] }");
+        userData.append(" --allocation-id ").append(eip);
         userData.append(" && ");
         userData.append("aws --region eu-west-1 ec2 modify-instance-attribute");
         userData.append(" --instance-id $INSTANCEID");
@@ -79,16 +79,16 @@ public class VpcNatCloudFormationHack {
         userData.append(" && ");
         userData.append("wget https://dl.influxdata.com/influxdb/releases/influxdb_1.6.4_amd64.deb\n");
         userData.append(" (aws --region eu-west-1 ec2 replace-route");
-        userData.append(" --route-table-id { \"Ref\": \"RouteTablePrivate\" }");
+        userData.append(" --route-table-id ").append(routeTable);
         userData.append("--destination-cidr-block '0.0.0.0/0'");
         userData.append(" --instance-id $INSTANCEID");
         userData.append(" || ");
         userData.append("aws --region eu-west-1 ec2 create-route");
-        userData.append(" --route-table-id { \"Ref\": \"RouteTablePrivate\" }");
+        userData.append(" --route-table-id ").append(routeTable);
         userData.append(" --destination-cidr-block '0.0.0.0/0'");
         userData.append(" --instance-id $INSTANCEID)");
         userData.append(" && ");
-        userData.append("/opt/aws/bin/cfn-init -v --stack { \"Ref\": \"AWS::StackName\"} --resource NATLaunchConfiguration --region eu-west-1\n");
+        userData.append("/opt/aws/bin/cfn-init -v --stack ").append(stackName).append(" --resource NATLaunchConfiguration --region eu-west-1\n");
 
         return new String(Base64.getEncoder().encode(userData.toString().getBytes()));
     }

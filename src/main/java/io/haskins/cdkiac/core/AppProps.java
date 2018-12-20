@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility model class for holding dtap/platform/application specific configuration data
+ */
 public class AppProps {
 
     private final Map<String, String> props = new HashMap<>();
@@ -35,5 +38,24 @@ public class AppProps {
     public List<Object> getPropAsObjectList(String key) {
         String value = this.props.get(key);
         return Lists.newArrayList(Splitter.on(",").split(value));
+    }
+
+    public String getUniqueId() {
+
+        StringBuilder id = new StringBuilder();
+
+        if (props.containsKey("dtap")) {
+            id.append(getPropAsString("dtap")).append("-");
+        }
+
+        if (props.containsKey("platform")) {
+            id.append(getPropAsString("platform")).append("-");
+        }
+
+        if (props.containsKey("app_id")) {
+            id.append(getPropAsString("app_id"));
+        }
+
+        return id.toString();
     }
 }
