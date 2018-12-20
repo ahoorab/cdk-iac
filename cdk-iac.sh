@@ -17,4 +17,5 @@ if [[ -z ${c} ]] || [[ -z ${t} ]] || [[ -z ${a} ]] || [[ -z ${d} ]]; then
     usage
 fi
 
+# exec cdk --profile ${d} --app "java -cp target/classes:$(cat .classpath.txt) io.haskins.cdkiac.template.${t} ${a} ${d} ${p}" ${c}
 exec cdk --app "java -cp target/classes:$(cat .classpath.txt) io.haskins.cdkiac.template.${t} ${a} ${d} ${p}" ${c}
