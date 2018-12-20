@@ -1,5 +1,7 @@
 # cdk-iac - Still in development / idea stage
 
+**20/12/18 - Updated to 0.21**
+
 The idea behind this project is to take the recently announced [CDK](https://awslabs.github.io/aws-cdk/index.html)
 and try and build a multiple application management tool around it.
 

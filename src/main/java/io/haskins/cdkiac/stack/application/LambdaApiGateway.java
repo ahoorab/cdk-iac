@@ -4,12 +4,12 @@ import io.haskins.cdkiac.core.AppProps;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.apigateway.cloudformation.*;
+import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.iam.Role;
 import software.amazon.awscdk.services.iam.RoleProps;
 import software.amazon.awscdk.services.iam.ServicePrincipal;
-import software.amazon.awscdk.services.lambda.cloudformation.FunctionResource;
-import software.amazon.awscdk.services.lambda.cloudformation.FunctionResourceProps;
+import software.amazon.awscdk.services.lambda.CfnFunction;
+import software.amazon.awscdk.services.lambda.CfnFunctionProps;
 
 public class LambdaApiGateway extends Stack {
 
@@ -28,34 +28,34 @@ public class LambdaApiGateway extends Stack {
                 .withAssumedBy(new ServicePrincipal("lambda.amazonaws.com"))
                 .build());
 
-        FunctionResource lambda = new FunctionResource(this, "LambdaFunction", FunctionResourceProps.builder()
+        CfnFunction lambda = new CfnFunction(this, "LambdaFunction", CfnFunctionProps.builder()
                 .withFunctionName(uniqueId)
                 .withRuntime(appProps.getPropAsString("runtime"))
                 .withMemorySize(appProps.getPropAsInteger("memory_size"))
                 .withHandler(appProps.getPropAsString("handler"))
                 .withRole(appRole.getRoleName())
-                .withCode(FunctionResource.CodeProperty.builder()
+                .withCode(CfnFunction.CodeProperty.builder()
                         .withS3Bucket(appProps.getPropAsString("code_bucket"))
                         .withS3Key(appProps.getPropAsString("code_key"))
                         .build())
                 .build());
 
-        RestApiResource restApi = new RestApiResource(this, "RestApi", RestApiResourceProps.builder()
+        CfnRestApi restApi = new CfnRestApi(this, "RestApi", CfnRestApiProps.builder()
                 .withName(uniqueId)
                 .build());
 
-        Resource resource = new Resource(this, "RestApiResource", ResourceProps.builder()
+        CfnResource CfnResource = new CfnResource(this, "CfnRestApi", CfnResourceProps.builder()
                 .withPathPart("{proxy+}")
                 .withRestApiId(restApi.getRestApiId())
                 .withParentId(restApi.getRestApiRootResourceId())
                 .build());
 
-        new MethodResource(this, "RestApiMethod", MethodResourceProps.builder()
+        new CfnMethod(this, "RestApiMethod", CfnMethodProps.builder()
                 .withRestApiId(restApi.getRestApiId())
-                .withResourceId(resource.getResourceId())
+                .withResourceId(CfnResource.getResourceId())
                 .withHttpMethod("ANY")
                 .withAuthorizationType("NONE")
-                .withIntegration(MethodResource.IntegrationProperty.builder()
+                .withIntegration(CfnMethod.IntegrationProperty.builder()
                         .withIntegrationHttpMethod("ANY")
                         .withType("AWS_PROXY")
                         .withUri(new StringBuilder()
@@ -65,7 +65,5 @@ public class LambdaApiGateway extends Stack {
                                 .toString())
                         .build())
                 .build());
-
-
     }
 }

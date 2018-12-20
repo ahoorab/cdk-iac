@@ -7,17 +7,12 @@ import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 
-import software.amazon.awscdk.services.autoscaling.cloudformation.AutoScalingGroupResource;
-import software.amazon.awscdk.services.autoscaling.cloudformation.AutoScalingGroupResourceProps;
-import software.amazon.awscdk.services.autoscaling.cloudformation.LaunchConfigurationResource;
-import software.amazon.awscdk.services.autoscaling.cloudformation.LaunchConfigurationResourceProps;
+import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroup;
+import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroupProps;
+import software.amazon.awscdk.services.autoscaling.CfnLaunchConfiguration;
+import software.amazon.awscdk.services.autoscaling.CfnLaunchConfigurationProps;
 import software.amazon.awscdk.services.ec2.*;
-import software.amazon.awscdk.services.ec2.cloudformation.EIPResource;
-import software.amazon.awscdk.services.ec2.cloudformation.VolumeResource;
-import software.amazon.awscdk.services.ec2.cloudformation.VolumeResourceProps;
 import software.amazon.awscdk.services.iam.*;
-import software.amazon.awscdk.services.iam.cloudformation.InstanceProfileResource;
-import software.amazon.awscdk.services.iam.cloudformation.InstanceProfileResourceProps;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,11 +42,11 @@ public class InfluxDb extends Stack {
 
         SecurityGroup sg = configureSecurityGroup();
 
-        EIPResource eip = configureEIP();
+        CfnEIP eip = configureEIP();
 
-        VolumeResource ebs = configureEBSVolume();
+        CfnVolume ebs = configureEBSVolume();
 
-        InstanceProfileResource instanceProfile = configureIamRole();
+        CfnInstanceProfile instanceProfile = configureIamRole();
 
         configureAutoScaling(instanceProfile, sg, eip, ebs);
     }
@@ -70,21 +65,21 @@ public class InfluxDb extends Stack {
         return sg;
     }
 
-    private EIPResource configureEIP() {
+    private CfnEIP configureEIP() {
 
-        return new EIPResource(this, "influxdbeip");
+        return new CfnEIP(this, "influxdbeip");
     }
 
-    private VolumeResource configureEBSVolume() {
+    private CfnVolume configureEBSVolume() {
 
-        return new VolumeResource(this, "influxdbebs", VolumeResourceProps.builder()
+        return new CfnVolume(this, "influxdbebs", CfnVolumeProps.builder()
                 .withSize(200)
                 .withVolumeType("gp2")
                 .withAvailabilityZone("eu-west-1a")
                 .build());
     }
 
-    private InstanceProfileResource configureIamRole() {
+    private CfnInstanceProfile configureIamRole() {
 
         Map<String, PolicyDocument> policies = new HashMap<>();
         policies.put("ec2", new PolicyDocument().addStatement(new PolicyStatement().allow().addResource("*").addActions("ec2:AssociateAddress", "ec2:AttachVolume")));
@@ -96,7 +91,7 @@ public class InfluxDb extends Stack {
                 .withInlinePolicies(policies)
                 .build());
 
-        return new InstanceProfileResource(this, "influxdbinstanceprofile", InstanceProfileResourceProps.builder()
+        return new CfnInstanceProfile(this, "influxdbinstanceprofile", CfnInstanceProfileProps.builder()
                 .withInstanceProfileName("influxdb-instanceprofile")
                 .withPath("/")
                 .withRoles(Collections.singletonList(role.getRoleName()))
@@ -104,10 +99,10 @@ public class InfluxDb extends Stack {
     }
 
     private void configureAutoScaling(
-            InstanceProfileResource instanceProfile,
+            CfnInstanceProfile instanceProfile,
             SecurityGroup sg,
-            EIPResource eip,
-            VolumeResource ebs) {
+            CfnEIP eip,
+            CfnVolume ebs) {
 
         StringBuilder userData = new StringBuilder();
         userData.append("#!/bin/bash -xe\n");
@@ -128,7 +123,7 @@ public class InfluxDb extends Stack {
 
         byte[] encodedBytes = Base64.getEncoder().encode(userData.toString().getBytes());
 
-        LaunchConfigurationResource lc = new LaunchConfigurationResource(this, "influxdbaslc", LaunchConfigurationResourceProps.builder()
+        CfnLaunchConfiguration lc = new CfnLaunchConfiguration(this, "influxdbaslc", CfnLaunchConfigurationProps.builder()
                 .withAssociatePublicIpAddress(true)
                 .withEbsOptimized(false)
                 .withImageId("ami-09f0b8b3e41191524")
@@ -139,7 +134,7 @@ public class InfluxDb extends Stack {
                 .withUserData(new String(encodedBytes))
                 .build());
 
-        new AutoScalingGroupResource(this, "influxdbasg", AutoScalingGroupResourceProps.builder()
+        new CfnAutoScalingGroup(this, "influxdbasg", CfnAutoScalingGroupProps.builder()
                 .withAutoScalingGroupName("influxdb-as-g")
                 .withDesiredCapacity("1")
                 .withLaunchConfigurationName(lc.getLaunchConfigurationName())

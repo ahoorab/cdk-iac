@@ -5,8 +5,8 @@ import io.haskins.cdkiac.core.AppProps;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.s3.cloudformation.BucketResource;
-import software.amazon.awscdk.services.s3.cloudformation.BucketResourceProps;
+import software.amazon.awscdk.services.s3.CfnBucket;
+import software.amazon.awscdk.services.s3.CfnBucketProps;
 
 import java.util.*;
 
@@ -21,9 +21,9 @@ public class S3 extends Stack {
 
         String uniqueId = appProps.getUniqueId();
 
-        BucketResource normal = new BucketResource(this, "mybucket", BucketResourceProps.builder()
+        CfnBucket normal = new CfnBucket(this, "mybucket", CfnBucketProps.builder()
                 .withBucketName(uniqueId)
-                .withVersioningConfiguration(BucketResource.VersioningConfigurationProperty.builder()
+                .withVersioningConfiguration(CfnBucket.VersioningConfigurationProperty.builder()
                         .withStatus("Enabled")
                         .build())
                 .build());
@@ -35,13 +35,13 @@ public class S3 extends Stack {
                 ImmutableMap.of("MaxAge", 3000)
         );
 
-        BucketResource webhosting = new BucketResource(this, "mybucket", BucketResourceProps.builder()
+        CfnBucket webhosting = new CfnBucket(this, "mybucket", CfnBucketProps.builder()
                 .withBucketName(uniqueId)
-                .withWebsiteConfiguration(BucketResource.WebsiteConfigurationProperty.builder()
+                .withWebsiteConfiguration(CfnBucket.WebsiteConfigurationProperty.builder()
                         .withIndexDocument("index.html")
                         .withErrorDocument("error.html")
                         .build())
-                .withCorsConfiguration(BucketResource.CorsConfigurationProperty.builder()
+                .withCorsConfiguration(CfnBucket.CorsConfigurationProperty.builder()
                         .withCorsRules(corsRules)
                         .build())
                 .build());

@@ -6,16 +6,15 @@ import io.haskins.cdkiac.stack.infrastructure.hack.VpcNatCloudFormationHack;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.autoscaling.cloudformation.AutoScalingGroupResource;
-import software.amazon.awscdk.services.autoscaling.cloudformation.AutoScalingGroupResourceProps;
-import software.amazon.awscdk.services.autoscaling.cloudformation.LaunchConfigurationResource;
-import software.amazon.awscdk.services.autoscaling.cloudformation.LaunchConfigurationResourceProps;
+import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroup;
+import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroupProps;
+import software.amazon.awscdk.services.autoscaling.CfnLaunchConfiguration;
+import software.amazon.awscdk.services.autoscaling.CfnLaunchConfigurationProps;
+import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ec2.cloudformation.*;
 import software.amazon.awscdk.services.iam.*;
-import software.amazon.awscdk.services.iam.cloudformation.InstanceProfileResource;
-import software.amazon.awscdk.services.iam.cloudformation.InstanceProfileResourceProps;
-import software.amazon.awscdk.services.logs.cloudformation.LogGroupResource;
-import software.amazon.awscdk.services.logs.cloudformation.LogGroupResourceProps;
+import software.amazon.awscdk.services.logs.CfnLogGroup;
+import software.amazon.awscdk.services.logs.CfnLogGroupProps;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +30,7 @@ public class VpcWithPeering extends Stack {
     private VpcWithPeering(final App parent, final String name, final StackProps props, final AppProps appProps) {
         super(parent, name, props);
 
-        VPCResource vpc = new VPCResource(this, "VPC", VPCResourceProps.builder()
+        CfnVPC vpc = new CfnVPC(this, "VPC", CfnVPCProps.builder()
                 .withCidrBlock(appProps.getPropAsString("vpc_cidr"))
                 .withEnableDnsHostnames(true)
                 .withEnableDnsSupport(true)
@@ -39,35 +38,35 @@ public class VpcWithPeering extends Stack {
                 .build());
 
 
-        SubnetResource subnetPrivateA = new SubnetResource(this, "SubnetPrivateA", SubnetResourceProps.builder()
+        CfnSubnet subnetPrivateA = new CfnSubnet(this, "SubnetPrivateA", CfnSubnetProps.builder()
                 .withAvailabilityZone("eu-west-1a")
                 .withCidrBlock("10.1.0.0/20")
                 .withVpcId(vpc.getVpcId())
                 .build());
-        SubnetResource subnetPrivateB = new SubnetResource(this, "SubnetPrivateB", SubnetResourceProps.builder()
+        CfnSubnet subnetPrivateB = new CfnSubnet(this, "SubnetPrivateB", CfnSubnetProps.builder()
                 .withAvailabilityZone("eu-west-1b")
                 .withCidrBlock("10.1.16.0/20")
                 .withVpcId(vpc.getVpcId())
                 .build());
-        SubnetResource subnetPrivateC = new SubnetResource(this, "SubnetPrivateC", SubnetResourceProps.builder()
+        CfnSubnet subnetPrivateC = new CfnSubnet(this, "SubnetPrivateC", CfnSubnetProps.builder()
                 .withAvailabilityZone("eu-west-1c")
                 .withCidrBlock("10.1.32.0/20")
                 .withVpcId(vpc.getVpcId())
                 .build());
 
-        SubnetResource subnetPublicA = new SubnetResource(this, "SubnetPublicA", SubnetResourceProps.builder()
+        CfnSubnet subnetPublicA = new CfnSubnet(this, "SubnetPublicA", CfnSubnetProps.builder()
                 .withAvailabilityZone("eu-west-1a")
                 .withCidrBlock("10.1.48.0/20")
                 .withMapPublicIpOnLaunch(true)
                 .withVpcId(vpc.getVpcId())
                 .build());
-        SubnetResource subnetPublicB = new SubnetResource(this, "SubnetPublicB", SubnetResourceProps.builder()
+        CfnSubnet subnetPublicB = new CfnSubnet(this, "SubnetPublicB", CfnSubnetProps.builder()
                 .withAvailabilityZone("eu-west-1b")
                 .withCidrBlock("10.1.64.0/20")
                 .withMapPublicIpOnLaunch(true)
                 .withVpcId(vpc.getVpcId())
                 .build());
-        SubnetResource subnetPublicC = new SubnetResource(this, "SubnetPublicC", SubnetResourceProps.builder()
+        CfnSubnet subnetPublicC = new CfnSubnet(this, "SubnetPublicC", CfnSubnetProps.builder()
                 .withAvailabilityZone("eu-west-1c")
                 .withCidrBlock("10.1.80.0/20")
                 .withMapPublicIpOnLaunch(true)
@@ -75,108 +74,108 @@ public class VpcWithPeering extends Stack {
                 .build());
 
 
-        RouteTableResource rtPrivate = new RouteTableResource(this, "RouteTablePrivate", RouteTableResourceProps.builder()
+        CfnRouteTable rtPrivate = new CfnRouteTable(this, "RouteTablePrivate", CfnRouteTableProps.builder()
                 .withVpcId(vpc.getVpcId())
                 .build());
 
-        RouteTableResource rtPublic = new RouteTableResource(this, "RouteTablePublic", RouteTableResourceProps.builder()
+        CfnRouteTable rtPublic = new CfnRouteTable(this, "RouteTablePublic", CfnRouteTableProps.builder()
                 .withVpcId(vpc.getVpcId())
                 .build());
 
 
-        new SubnetRouteTableAssociationResource(this, "RouteTableAssociationPrivateA", SubnetRouteTableAssociationResourceProps.builder()
+        new CfnSubnetRouteTableAssociation(this, "RouteTableAssociationPrivateA", CfnSubnetRouteTableAssociationProps.builder()
                 .withRouteTableId(rtPrivate.getRouteTableId())
                 .withSubnetId(subnetPrivateA.getSubnetId())
                 .build());
-        new SubnetRouteTableAssociationResource(this, "RouteTableAssociationPrivateB", SubnetRouteTableAssociationResourceProps.builder()
+        new CfnSubnetRouteTableAssociation(this, "RouteTableAssociationPrivateB", CfnSubnetRouteTableAssociationProps.builder()
                 .withRouteTableId(rtPrivate.getRouteTableId())
                 .withSubnetId(subnetPrivateB.getSubnetId())
                 .build());
-        new SubnetRouteTableAssociationResource(this, "RouteTableAssociationPrivateC", SubnetRouteTableAssociationResourceProps.builder()
+        new CfnSubnetRouteTableAssociation(this, "RouteTableAssociationPrivateC", CfnSubnetRouteTableAssociationProps.builder()
                 .withRouteTableId(rtPrivate.getRouteTableId())
                 .withSubnetId(subnetPrivateC.getSubnetId())
                 .build());
 
-        new SubnetRouteTableAssociationResource(this, "RouteTableAssociationPublicA", SubnetRouteTableAssociationResourceProps.builder()
+        new CfnSubnetRouteTableAssociation(this, "RouteTableAssociationPublicA", CfnSubnetRouteTableAssociationProps.builder()
                 .withRouteTableId(rtPublic.getRouteTableId())
                 .withSubnetId(subnetPublicA.getSubnetId())
                 .build());
-        new SubnetRouteTableAssociationResource(this, "RouteTableAssociationPublicB", SubnetRouteTableAssociationResourceProps.builder()
+        new CfnSubnetRouteTableAssociation(this, "RouteTableAssociationPublicB", CfnSubnetRouteTableAssociationProps.builder()
                 .withRouteTableId(rtPublic.getRouteTableId())
                 .withSubnetId(subnetPublicB.getSubnetId())
                 .build());
-        new SubnetRouteTableAssociationResource(this, "RouteTableAssociationPublicC", SubnetRouteTableAssociationResourceProps.builder()
+        new CfnSubnetRouteTableAssociation(this, "RouteTableAssociationPublicC", CfnSubnetRouteTableAssociationProps.builder()
                 .withRouteTableId(rtPublic.getRouteTableId())
                 .withSubnetId(subnetPublicC.getSubnetId())
                 .build());
 
-        NetworkAclResource privateNacl = new NetworkAclResource(this, "NetworkAclPrivate", NetworkAclResourceProps.builder()
+        CfnNetworkAcl privateNacl = new CfnNetworkAcl(this, "NetworkAclPrivate", CfnNetworkAclProps.builder()
                 .withVpcId(vpc.getVpcId())
                 .build());
-        NetworkAclResource publicNacl = new NetworkAclResource(this, "NetworkAclPublic", NetworkAclResourceProps.builder()
+        CfnNetworkAcl publicNacl = new CfnNetworkAcl(this, "NetworkAclPublic", CfnNetworkAclProps.builder()
                 .withVpcId(vpc.getVpcId())
                 .build());
 
 
-        new SubnetNetworkAclAssociationResource(this, "SubnetNetworkAclAssociationPrivateA", SubnetNetworkAclAssociationResourceProps.builder()
+        new CfnSubnetNetworkAclAssociation(this, "SubnetNetworkAclAssociationPrivateA", CfnSubnetNetworkAclAssociationProps.builder()
                 .withNetworkAclId(privateNacl.getNetworkAclName())
                 .withSubnetId(subnetPrivateA.getSubnetId())
                 .build());
-        new SubnetNetworkAclAssociationResource(this, "SubnetNetworkAclAssociationPrivateB", SubnetNetworkAclAssociationResourceProps.builder()
+        new CfnSubnetNetworkAclAssociation(this, "SubnetNetworkAclAssociationPrivateB", CfnSubnetNetworkAclAssociationProps.builder()
                 .withNetworkAclId(privateNacl.getNetworkAclName())
                 .withSubnetId(subnetPrivateB.getSubnetId())
                 .build());
-        new SubnetNetworkAclAssociationResource(this, "SubnetNetworkAclAssociationPrivateC", SubnetNetworkAclAssociationResourceProps.builder()
+        new CfnSubnetNetworkAclAssociation(this, "SubnetNetworkAclAssociationPrivateC", CfnSubnetNetworkAclAssociationProps.builder()
                 .withNetworkAclId(privateNacl.getNetworkAclName())
                 .withSubnetId(subnetPrivateB.getSubnetId())
                 .build());
 
-        new SubnetNetworkAclAssociationResource(this, "SubnetNetworkAclAssociationPublicA", SubnetNetworkAclAssociationResourceProps.builder()
+        new CfnSubnetNetworkAclAssociation(this, "SubnetNetworkAclAssociationPublicA", CfnSubnetNetworkAclAssociationProps.builder()
                 .withNetworkAclId(publicNacl.getNetworkAclName())
                 .withSubnetId(subnetPublicA.getSubnetId())
                 .build());
-        new SubnetNetworkAclAssociationResource(this, "SubnetNetworkAclAssociationPublicB", SubnetNetworkAclAssociationResourceProps.builder()
+        new CfnSubnetNetworkAclAssociation(this, "SubnetNetworkAclAssociationPublicB", CfnSubnetNetworkAclAssociationProps.builder()
                 .withNetworkAclId(publicNacl.getNetworkAclName())
                 .withSubnetId(subnetPublicB.getSubnetId())
                 .build());
-        new SubnetNetworkAclAssociationResource(this, "SubnetNetworkAclAssociationPublicC", SubnetNetworkAclAssociationResourceProps.builder()
+        new CfnSubnetNetworkAclAssociation(this, "SubnetNetworkAclAssociationPublicC", CfnSubnetNetworkAclAssociationProps.builder()
                 .withNetworkAclId(publicNacl.getNetworkAclName())
                 .withSubnetId(subnetPublicC.getSubnetId())
                 .build());
 
 
-        VPCPeeringConnectionResource peer = new VPCPeeringConnectionResource(this, "Peer", VPCPeeringConnectionResourceProps.builder()
+        CfnVPCPeeringConnection peer = new CfnVPCPeeringConnection(this, "Peer", CfnVPCPeeringConnectionProps.builder()
                 .withPeerVpcId(appProps.getPropAsString("vpc_peer_id"))
                 .withVpcId(vpc.getVpcId())
                 .withPeerOwnerId(appProps.getPropAsString("accountid"))
                 .build());
 
-        new RouteResource(this, "PeeringRoute1", RouteResourceProps.builder()
+        new CfnRoute(this, "PeeringRoute1", CfnRouteProps.builder()
                 .withDestinationCidrBlock("10.0.0.0/16")
                 .withRouteTableId(rtPrivate.getRouteTableId())
                 .withVpcPeeringConnectionId(peer.getVpcPeeringConnectionName())
                 .build());
-        new RouteResource(this, "PeeringRoute2", RouteResourceProps.builder()
+        new CfnRoute(this, "PeeringRoute2", CfnRouteProps.builder()
                 .withDestinationCidrBlock("10.0.0.0/16")
                 .withRouteTableId(rtPublic.getRouteTableId())
                 .withVpcPeeringConnectionId(peer.getVpcPeeringConnectionName())
                 .build());
-        new RouteResource(this, "PeeringRoute3", RouteResourceProps.builder()
+        new CfnRoute(this, "PeeringRoute3", CfnRouteProps.builder()
                 .withDestinationCidrBlock("10.1.0.0/16")
                 .withRouteTableId(appProps.getPropAsString("vpc_peer_rt"))
                 .withVpcPeeringConnectionId(peer.getVpcPeeringConnectionName())
                 .build());
 
 
-        InternetGatewayResource internetGatewayResource = new InternetGatewayResource(this, "InternetGateway");
+        CfnInternetGateway CfnInternetGateway = new CfnInternetGateway(this, "InternetGateway");
 
-        new VPCGatewayAttachmentResource(this, "VpcGatewayAttachment", VPCGatewayAttachmentResourceProps.builder()
+        new CfnVPCGatewayAttachment(this, "VpcGatewayAttachment", CfnVPCGatewayAttachmentProps.builder()
                 .withVpcId(vpc.getVpcId())
-                .withInternetGatewayId(internetGatewayResource.getInternetGatewayName())
+                .withInternetGatewayId(CfnInternetGateway.getInternetGatewayName())
                 .build());
 
 
-        new NetworkAclEntryResource(this, "NetworkAclEntryInPublicAllowAll", NetworkAclEntryResourceProps.builder()
+        new CfnNetworkAclEntry(this, "NetworkAclEntryInPublicAllowAll", CfnNetworkAclEntryProps.builder()
                 .withCidrBlock("0.0.0.0/0")
                 .withEgress(false)
                 .withNetworkAclId(publicNacl.getNetworkAclName())
@@ -184,7 +183,7 @@ public class VpcWithPeering extends Stack {
                 .withRuleAction("allow")
                 .withRuleNumber(99)
                 .build());
-        new NetworkAclEntryResource(this, "NetworkAclEntryOutPublicAllowAll", NetworkAclEntryResourceProps.builder()
+        new CfnNetworkAclEntry(this, "NetworkAclEntryOutPublicAllowAll", CfnNetworkAclEntryProps.builder()
                 .withCidrBlock("0.0.0.0/0")
                 .withEgress(true)
                 .withNetworkAclId(publicNacl.getNetworkAclName())
@@ -192,7 +191,7 @@ public class VpcWithPeering extends Stack {
                 .withRuleAction("allow")
                 .withRuleNumber(99)
                 .build());
-        new NetworkAclEntryResource(this, "NetworkAclEntryInPrivateAllowAll", NetworkAclEntryResourceProps.builder()
+        new CfnNetworkAclEntry(this, "NetworkAclEntryInPrivateAllowAll", CfnNetworkAclEntryProps.builder()
                 .withCidrBlock("0.0.0.0/0")
                 .withEgress(false)
                 .withNetworkAclId(privateNacl.getNetworkAclName())
@@ -200,7 +199,7 @@ public class VpcWithPeering extends Stack {
                 .withRuleAction("allow")
                 .withRuleNumber(99)
                 .build());
-        new NetworkAclEntryResource(this, "NetworkAclEntryOutPrivateAllowAll", NetworkAclEntryResourceProps.builder()
+        new CfnNetworkAclEntry(this, "NetworkAclEntryOutPrivateAllowAll", CfnNetworkAclEntryProps.builder()
                 .withCidrBlock("0.0.0.0/0")
                 .withEgress(true)
                 .withNetworkAclId(privateNacl.getNetworkAclName())
@@ -210,15 +209,15 @@ public class VpcWithPeering extends Stack {
                 .build());
 
 
-        EIPResource natEip = new EIPResource(this, "NatEip");
+        CfnEIP natEip = new CfnEIP(this, "NatEip");
 
 
-        new LogGroupResource(this, "NatLogGroup", LogGroupResourceProps.builder()
+        new CfnLogGroup(this, "NatLogGroup", CfnLogGroupProps.builder()
                 .withLogGroupName("vpc-nat-logs")
                 .withRetentionInDays(14)
                 .build());
 
-        SecurityGroupResource bastionSg = new SecurityGroupResource(this,"BastionSecurityGroup", SecurityGroupResourceProps.builder()
+        CfnSecurityGroup bastionSg = new CfnSecurityGroup(this,"BastionSecurityGroup", CfnSecurityGroupProps.builder()
                 .withGroupName("bastion")
                 .withGroupDescription("bastion")
                 .withVpcId(vpc.getVpcId())
@@ -228,7 +227,7 @@ public class VpcWithPeering extends Stack {
                 )
                 .build());
 
-        SecurityGroupResource natSG = new SecurityGroupResource(this,"NatSecurityGroup", SecurityGroupResourceProps.builder()
+        CfnSecurityGroup natSG = new CfnSecurityGroup(this,"NatSecurityGroup", CfnSecurityGroupProps.builder()
                 .withGroupName("nat")
                 .withGroupDescription("nat")
                 .withVpcId(vpc.getVpcId())
@@ -254,14 +253,14 @@ public class VpcWithPeering extends Stack {
                 .withInlinePolicies(natPolicies)
                 .build());
 
-        InstanceProfileResource natInstanceProfile = new InstanceProfileResource(this, "NatInstanceProfile", InstanceProfileResourceProps.builder()
+        CfnInstanceProfile natInstanceProfile = new CfnInstanceProfile(this, "NatInstanceProfile", CfnInstanceProfileProps.builder()
                 .withInstanceProfileName("influxdb-instanceprofile")
                 .withPath("/")
                 .withRoles(Collections.singletonList(natRole.getRoleName()))
                 .build());
 
 
-        LaunchConfigurationResource natLaunch = new LaunchConfigurationResource(this, "NATLaunchConfiguration", LaunchConfigurationResourceProps.builder()
+        CfnLaunchConfiguration natLaunch = new CfnLaunchConfiguration(this, "NATLaunchConfiguration", CfnLaunchConfigurationProps.builder()
                 .withAssociatePublicIpAddress(true)
                 .withEbsOptimized(false)
                 .withIamInstanceProfile(natInstanceProfile.getInstanceProfileArn())
@@ -275,7 +274,7 @@ public class VpcWithPeering extends Stack {
         natLaunch.addOverride("Metadata", VpcNatCloudFormationHack.getCloudFormationMetadata());
 
 
-        new AutoScalingGroupResource(this, "NATAutoScalingGroup", AutoScalingGroupResourceProps.builder()
+        new CfnAutoScalingGroup(this, "NATAutoScalingGroup", CfnAutoScalingGroupProps.builder()
                 .withAutoScalingGroupName("nat")
                 .withDesiredCapacity("1")
                 .withLaunchConfigurationName(natLaunch.getLaunchConfigurationName())
@@ -285,9 +284,9 @@ public class VpcWithPeering extends Stack {
                 .build());
 
 
-        EIPResource bastionEip = new EIPResource(this, "BastionEip");
+        CfnEIP bastionEip = new CfnEIP(this, "BastionEip");
 
-        new LogGroupResource(this, "BastionLogGroup", LogGroupResourceProps.builder()
+        new CfnLogGroup(this, "BastionLogGroup", CfnLogGroupProps.builder()
                 .withLogGroupName("vpc-bastion-logs")
                 .withRetentionInDays(14)
                 .build());
@@ -305,14 +304,14 @@ public class VpcWithPeering extends Stack {
                 .withInlinePolicies(bastionPolicies)
                 .build());
 
-        InstanceProfileResource bastionInstanceProfile = new InstanceProfileResource(this, "BastionInstanceProfile", InstanceProfileResourceProps.builder()
+        CfnInstanceProfile bastionInstanceProfile = new CfnInstanceProfile(this, "BastionInstanceProfile", CfnInstanceProfileProps.builder()
                 .withInstanceProfileName("bastion")
                 .withPath("/")
                 .withRoles(Collections.singletonList(bastionRole.getRoleName()))
                 .build());
 
 
-        LaunchConfigurationResource bastionLaunch = new LaunchConfigurationResource(this, "BastionLaunchConfiguration", LaunchConfigurationResourceProps.builder()
+        CfnLaunchConfiguration bastionLaunch = new CfnLaunchConfiguration(this, "BastionLaunchConfiguration", CfnLaunchConfigurationProps.builder()
                 .withAssociatePublicIpAddress(true)
                 .withEbsOptimized(false)
                 .withIamInstanceProfile(bastionInstanceProfile.getInstanceProfileArn())
@@ -326,7 +325,7 @@ public class VpcWithPeering extends Stack {
         natLaunch.addOverride("Metadata", VpcBastionCloudFormationHack.getCloudFormationMetadata());
 
 
-        new AutoScalingGroupResource(this, "BastionAutoScalingGroup", AutoScalingGroupResourceProps.builder()
+        new CfnAutoScalingGroup(this, "BastionAutoScalingGroup", CfnAutoScalingGroupProps.builder()
                 .withAutoScalingGroupName("bastion")
                 .withDesiredCapacity("1")
                 .withLaunchConfigurationName(bastionLaunch.getLaunchConfigurationName())

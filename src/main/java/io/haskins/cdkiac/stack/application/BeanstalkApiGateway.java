@@ -4,16 +4,12 @@ import io.haskins.cdkiac.core.AppProps;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.apigateway.cloudformation.*;
-import software.amazon.awscdk.services.elasticbeanstalk.cloudformation.ApplicationResource;
-import software.amazon.awscdk.services.elasticbeanstalk.cloudformation.ApplicationResourceProps;
-import software.amazon.awscdk.services.elasticbeanstalk.cloudformation.EnvironmentResource;
-import software.amazon.awscdk.services.elasticbeanstalk.cloudformation.EnvironmentResourceProps;
-import software.amazon.awscdk.services.iam.Role;
-import software.amazon.awscdk.services.iam.RoleProps;
-import software.amazon.awscdk.services.iam.ServicePrincipal;
-import software.amazon.awscdk.services.iam.cloudformation.InstanceProfileResource;
-import software.amazon.awscdk.services.iam.cloudformation.InstanceProfileResourceProps;
+import software.amazon.awscdk.services.apigateway.*;
+import software.amazon.awscdk.services.elasticbeanstalk.CfnApplication;
+import software.amazon.awscdk.services.elasticbeanstalk.CfnApplicationProps;
+import software.amazon.awscdk.services.elasticbeanstalk.CfnEnvironment;
+import software.amazon.awscdk.services.elasticbeanstalk.CfnEnvironmentProps;
+import software.amazon.awscdk.services.iam.*;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -50,50 +46,50 @@ public class BeanstalkApiGateway extends Stack {
                 .build());
 
 
-        new InstanceProfileResource(this, "ApplicationInstanceProfile", InstanceProfileResourceProps.builder()
+        new CfnInstanceProfile(this, "ApplicationInstanceProfile", CfnInstanceProfileProps.builder()
                 .withInstanceProfileName(uniqueId)
                 .withPath("/")
                 .withRoles(Collections.singletonList(appRole.getRoleName()))
                 .build());
 
-        ApplicationResource applicationResource = new ApplicationResource(this, "BeanstalkApplication", ApplicationResourceProps.builder()
+        CfnApplication CfnApplication = new CfnApplication(this, "BeanstalkApplication", CfnApplicationProps.builder()
                 .withApplicationName(uniqueId)
                 .build());
 
-        new EnvironmentResource(this, "BeanstalkEnvironment", EnvironmentResourceProps.builder()
+        new CfnEnvironment(this, "BeanstalkEnvironment", CfnEnvironmentProps.builder()
                 .withEnvironmentName(uniqueId)
                 .withSolutionStackName("64bit Amazon Linux 2018.03 v2.7.7 running Java 8")
                 .withCnamePrefix(uniqueId)
-                .withApplicationName(applicationResource.getApplicationName())
+                .withApplicationName(CfnApplication.getApplicationName())
                 .withOptionSettings(Arrays.asList(
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:autoscaling:asg").withOptionName("Availability Zones").withValue("Any 3").build(),
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:environment").withOptionName("ServiceRole").withValue("aws-elasticbeanstalk-service-role").build(),
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:application:environment").withOptionName("SERVER_PORT").withValue("5000").build(),
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:healthreporting:system").withOptionName("SystemType").withValue("enhanced").build(),
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("InstanceType").withValue(appProps.getPropAsString("instance_type")).build(),
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("EC2KeyName").withValue(appProps.getPropAsString("keypair")).build(),
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("SSHSourceRestriction").withValue(String.format("tcp,22,22,%s", appProps.getPropAsStringList("bastionSG"))).build(),
-                        EnvironmentResource.OptionSettingProperty.builder().withNamespace("aws:ec2:vpc").withOptionName("VPCId").withValue(appProps.getPropAsString("vpcId")).build()
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:asg").withOptionName("Availability Zones").withValue("Any 3").build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:environment").withOptionName("ServiceRole").withValue("aws-elasticbeanstalk-service-role").build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:application:environment").withOptionName("SERVER_PORT").withValue("5000").build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:healthreporting:system").withOptionName("SystemType").withValue("enhanced").build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("InstanceType").withValue(appProps.getPropAsString("instance_type")).build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("EC2KeyName").withValue(appProps.getPropAsString("keypair")).build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("SSHSourceRestriction").withValue(String.format("tcp,22,22,%s", appProps.getPropAsStringList("bastionSG"))).build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:ec2:vpc").withOptionName("VPCId").withValue(appProps.getPropAsString("vpcId")).build()
                 ))
                 .build());
 
-        RestApiResource restApi = new RestApiResource(this, "RestApi", RestApiResourceProps.builder()
+        CfnRestApi restApi = new CfnRestApi(this, "RestApi", CfnRestApiProps.builder()
                 .withName(uniqueId)
                 .build());
 
-        Resource resource = new Resource(this, "RestApiResource", ResourceProps.builder()
+        CfnResource CfnResource = new CfnResource(this, "CfnRestApi", CfnResourceProps.builder()
                 .withPathPart("{proxy+}")
                 .withRestApiId(restApi.getRestApiId())
                 .withParentId(restApi.getRestApiRootResourceId())
                 .build());
 
-        new MethodResource(this, "RestApiMethod", MethodResourceProps.builder()
+        new CfnMethod(this, "RestApiMethod", CfnMethodProps.builder()
                 .withRestApiId(restApi.getRestApiId())
-                .withResourceId(resource.getResourceId())
+                .withResourceId(CfnResource.getResourceId())
                 .withHttpMethod("ANY")
                 .withAuthorizationType("NONE")
                 .withRequestParameters(ImmutableMap.of("method.request.path.proxy", true))
-                .withIntegration(MethodResource.IntegrationProperty.builder()
+                .withIntegration(CfnMethod.IntegrationProperty.builder()
                         .withIntegrationHttpMethod("ANY")
                         .withType("HTTP_PROXY")
                         .withUri("http://" + uniqueId + ".eu-west-1.elasticbeanstalk.com/{proxy}")

@@ -5,9 +5,11 @@ import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.ec2.*;
-import software.amazon.awscdk.services.rds.cloudformation.*;
+import software.amazon.awscdk.services.rds.CfnDBInstance;
+import software.amazon.awscdk.services.rds.CfnDBInstanceProps;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class RDS extends Stack {
 
@@ -37,7 +39,7 @@ public class RDS extends Stack {
         sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("myCidr")), new TcpPort(3306));
         sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("vpcCidr")), new TcpPort(3306));
 
-        DBInstanceResource rds = new DBInstanceResource(this, "Rds", DBInstanceResourceProps.builder()
+        CfnDBInstance rds = new CfnDBInstance(this, "Rds", CfnDBInstanceProps.builder()
                 .withAllocatedStorage(appProps.getPropAsString("rds_storage"))
                 .withStorageType("gp2")
                 .withDbInstanceClass(appProps.getPropAsString("rds_ec2"))
@@ -48,7 +50,7 @@ public class RDS extends Stack {
                 .withMasterUsername("Root")
                 .withMasterUserPassword("0000") // they'll never guess that :)
                 .withMultiAz(appProps.getPropAsBoolean("rds_multi"))
-                .withVpcSecurityGroups(Arrays.asList(sg.getSecurityGroupId()))
+                .withVpcSecurityGroups(Collections.singletonList(sg.getSecurityGroupId()))
                 .withDbParameterGroupName(appProps.getPropAsString("rds_param_group"))
                 .build());
     }
