@@ -1,28 +1,30 @@
 package io.haskins.cdkiac.template;
 
 import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.stack.infrastructure.S3;
 import software.amazon.awscdk.App;
 
-/**
- * Creates and InfluxDb Stack
- */
-public class InfluxDb  extends CdkIacTemplate {
+import java.util.Map;
 
-    private InfluxDb() {
+/**
+ * Template that creates two S3 buckets
+ */
+public class MyS3 extends CdkIacTemplate {
+
+    private MyS3() {
         super();
     }
 
     @Override
     void defineStacks(App app, AppProps appProps) {
-        new io.haskins.cdkiac.stack.application.InfluxDb(app, appProps.getUniqueId(), appProps);
+        new S3(app, appProps.getUniqueId(), appProps);
     }
 
     @Override
     void setAppProperties(AppProps appProps) {
-        appProps.addProp("instance_type", "t2.small");
     }
 
     public static void main(final String[] args) {
-        new InfluxDb();
+        new MyS3();
     }
 }

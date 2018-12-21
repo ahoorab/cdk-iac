@@ -1,18 +1,20 @@
 package io.haskins.cdkiac.template;
 
+import io.haskins.cdkiac.core.AppProps;
 import io.haskins.cdkiac.stack.application.LambdaApiGateway;
 import software.amazon.awscdk.App;
 
 /**
  * App that uses the LambdaApiGateway Stack
  */
-public class HelloWorldFunction  extends CdkIacApp {
+public class HelloWorldFunction  extends CdkIacTemplate {
 
-    private HelloWorldFunction(String[] args) {
-        super(args);
+    private HelloWorldFunction() {
+        super();
     }
 
-    void setAppProperties() {
+    @Override
+    void setAppProperties(AppProps appProps) {
         appProps.addProp("runtime", "python3.6");
         appProps.addProp("memory_size", "128");
         appProps.addProp("handler", "lambda_function.lambda_handler");
@@ -20,11 +22,12 @@ public class HelloWorldFunction  extends CdkIacApp {
         appProps.addProp("code_key", "hello-world-function.zip");
     }
 
-    void defineStacks(App app) {
-        new LambdaApiGateway(app, getUniqueId(), appProps);
+    @Override
+    void defineStacks(App app, AppProps appProps) {
+        new LambdaApiGateway(app, appProps.getUniqueId(), appProps);
     }
 
     public static void main(final String[] args) {
-        new HelloWorldFunction(args);
+        new HelloWorldFunction();
     }
 }

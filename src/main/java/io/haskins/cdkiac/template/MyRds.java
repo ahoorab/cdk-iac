@@ -1,19 +1,25 @@
 package io.haskins.cdkiac.template;
 
+import io.haskins.cdkiac.core.AppProps;
 import io.haskins.cdkiac.stack.infrastructure.RDS;
 import software.amazon.awscdk.App;
 
-public class MyRds extends CdkIacApp {
+/**
+ * Template that creates and RDS
+ */
+public class MyRds extends CdkIacTemplate {
 
-    private MyRds(String[] args) {
-        super(args);
+    private MyRds() {
+        super();
     }
 
-    void defineStacks(App app) {
-        new RDS(app, getUniqueId(), appProps);
+    @Override
+    void defineStacks(App app, AppProps appProps) {
+        new RDS(app, appProps.getUniqueId(), appProps);
     }
 
-    void setAppProperties() {
+    @Override
+    void setAppProperties(AppProps appProps) {
         appProps.addProp("rds_storage", "10");
         appProps.addProp("rds_ec2", "db.t2.medium");
         appProps.addProp("rds_subnet", "subnet-group");
@@ -24,6 +30,6 @@ public class MyRds extends CdkIacApp {
     }
 
     public static void main(final String[] args) {
-        new MyRds(args);
+        new MyRds();
     }
 }
