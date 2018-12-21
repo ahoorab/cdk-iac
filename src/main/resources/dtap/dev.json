@@ -1,5 +1,13 @@
 {
-  "accountId": "01234567890",
+  "account_id": "01234567890",
   "dtap": "dev",
-  "keypair": "DevOps"
+  "keypair": "DevOps",
+
+  "availability_zones": "eu-west-1a, eu-west-1b, eu-west-1c",
+  "bastion_sg": "sg-xxxxxxxx",
+  "ec2_subnets": "subnet-xxxxxxxx, subnet-xxxxxxxx, subnet-xxxxxxxx",
+  "elb_subnets": "subnet-xxxxxxxx, subnet-xxxxxxxx, subnet-xxxxxxxx",
+  "my_cidr": "127.0.0.1/32",
+  "vpc_id": "vpc-xxxxxxxx",
+  "vpc_cidr": "10.0.0.0/16"
 }

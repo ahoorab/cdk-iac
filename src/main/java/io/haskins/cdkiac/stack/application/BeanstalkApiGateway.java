@@ -1,8 +1,11 @@
 package io.haskins.cdkiac.stack.application;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.stack.CdkIacStack;
+import io.haskins.cdkiac.utils.IamPolicyGenerator;
 import software.amazon.awscdk.App;
-import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.elasticbeanstalk.CfnApplication;
@@ -13,38 +16,40 @@ import software.amazon.awscdk.services.iam.*;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Stack that provisions an Elastic Beanstalk template that sits behind API Gateway
  */
-public class BeanstalkApiGateway extends Stack {
+public class BeanstalkApiGateway extends CdkIacStack {
 
     public BeanstalkApiGateway(final App parent, final String name, final AppProps appProps) {
         this(parent, name, null, appProps);
     }
 
     private BeanstalkApiGateway(final App parent, final String name, final StackProps props, final AppProps appProps) {
-        super(parent, name, props);
+        super(parent, name, props, appProps);
+    }
 
-        String uniqueId = appProps.getUniqueId();
+    protected void defineResources() {
 
         /*
          * at some point turn these in constructs
          */
-        Role appRole = new Role(this, "ApplicationRole", RoleProps.builder()
+        CfnRole.PolicyProperty appPolicy =  CfnRole.PolicyProperty.builder()
+                .withPolicyName("DynamoDb")
+                .withPolicyDocument(getAppPolicyDocument())
+                .build();
+
+        CfnRole appRole = new CfnRole(this, "ApplicationRole", CfnRoleProps.builder()
                 .withRoleName(uniqueId)
                 .withPath("/")
-                .withAssumedBy(new ServicePrincipal("ec2.amazonaws.com"))
+                .withAssumeRolePolicyDocument(IamPolicyGenerator.getServiceTrustPolicy("ec2.amazonaws.com"))
+                .withPolicies(Collections.singletonList(appPolicy))
                 .build());
-
-        new Role(this, "JenkinsRole", RoleProps.builder()
-                .withRoleName(uniqueId + "-jenkins")
-                .withPath("/")
-                .withAssumedBy(new ServicePrincipal("ec2.amazonaws.com"))
-                .build());
-
 
         new CfnInstanceProfile(this, "ApplicationInstanceProfile", CfnInstanceProfileProps.builder()
                 .withInstanceProfileName(uniqueId)
@@ -52,15 +57,15 @@ public class BeanstalkApiGateway extends Stack {
                 .withRoles(Collections.singletonList(appRole.getRoleName()))
                 .build());
 
-        CfnApplication CfnApplication = new CfnApplication(this, "BeanstalkApplication", CfnApplicationProps.builder()
+        CfnApplication cfnApplication = new CfnApplication(this, "BeanstalkApplication", CfnApplicationProps.builder()
                 .withApplicationName(uniqueId)
                 .build());
 
         new CfnEnvironment(this, "BeanstalkEnvironment", CfnEnvironmentProps.builder()
                 .withEnvironmentName(uniqueId)
-                .withSolutionStackName("64bit Amazon Linux 2018.03 v2.7.7 running Java 8")
+                .withSolutionStackName(appProps.getPropAsString("solution_stack"))
                 .withCnamePrefix(uniqueId)
-                .withApplicationName(CfnApplication.getApplicationName())
+                .withApplicationName(cfnApplication.getApplicationName())
                 .withOptionSettings(Arrays.asList(
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:asg").withOptionName("Availability Zones").withValue("Any 3").build(),
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:environment").withOptionName("ServiceRole").withValue("aws-elasticbeanstalk-service-role").build(),
@@ -68,8 +73,8 @@ public class BeanstalkApiGateway extends Stack {
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:elasticbeanstalk:healthreporting:system").withOptionName("SystemType").withValue("enhanced").build(),
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("InstanceType").withValue(appProps.getPropAsString("instance_type")).build(),
                         CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("EC2KeyName").withValue(appProps.getPropAsString("keypair")).build(),
-                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("SSHSourceRestriction").withValue(String.format("tcp,22,22,%s", appProps.getPropAsStringList("bastionSG"))).build(),
-                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:ec2:vpc").withOptionName("VPCId").withValue(appProps.getPropAsString("vpcId")).build()
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:autoscaling:launchconfiguration").withOptionName("SSHSourceRestriction").withValue(String.format("tcp,22,22,%s", appProps.getPropAsString("bastion_sg"))).build(),
+                        CfnEnvironment.OptionSettingProperty.builder().withNamespace("aws:ec2:vpc").withOptionName("VPCId").withValue(appProps.getPropAsString("vpc_id")).build()
                 ))
                 .build());
 
@@ -77,7 +82,7 @@ public class BeanstalkApiGateway extends Stack {
                 .withName(uniqueId)
                 .build());
 
-        CfnResource CfnResource = new CfnResource(this, "CfnRestApi", CfnResourceProps.builder()
+        CfnResource cfnResource = new CfnResource(this, "CfnRestApi", CfnResourceProps.builder()
                 .withPathPart("{proxy+}")
                 .withRestApiId(restApi.getRestApiId())
                 .withParentId(restApi.getRestApiRootResourceId())
@@ -85,7 +90,7 @@ public class BeanstalkApiGateway extends Stack {
 
         new CfnMethod(this, "RestApiMethod", CfnMethodProps.builder()
                 .withRestApiId(restApi.getRestApiId())
-                .withResourceId(CfnResource.getResourceId())
+                .withResourceId(cfnResource.getResourceId())
                 .withHttpMethod("ANY")
                 .withAuthorizationType("NONE")
                 .withRequestParameters(ImmutableMap.of("method.request.path.proxy", true))
@@ -95,5 +100,14 @@ public class BeanstalkApiGateway extends Stack {
                         .withUri("http://" + uniqueId + ".eu-west-1.elasticbeanstalk.com/{proxy}")
                         .build())
                 .build());
+    }
+
+    private ObjectNode getAppPolicyDocument() {
+
+        List<JsonNode> statements = new ArrayList<>();
+
+        statements.add(IamPolicyGenerator.getPolicyStatement("Allow", Collections.singletonList("dynamodb:*"), Collections.singletonList("*")));
+
+        return IamPolicyGenerator.getPolicyDocument(statements);
     }
 }

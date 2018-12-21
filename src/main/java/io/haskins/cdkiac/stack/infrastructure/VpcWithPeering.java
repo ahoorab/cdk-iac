@@ -1,10 +1,10 @@
 package io.haskins.cdkiac.stack.infrastructure;
 
 import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.stack.CdkIacStack;
 import io.haskins.cdkiac.stack.infrastructure.hack.VpcBastionCloudFormationHack;
 import io.haskins.cdkiac.stack.infrastructure.hack.VpcNatCloudFormationHack;
 import software.amazon.awscdk.App;
-import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroupProps;
@@ -21,14 +21,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VpcWithPeering extends Stack {
+public class VpcWithPeering extends CdkIacStack {
 
     public VpcWithPeering(final App parent, final String name, final AppProps appProps) {
         this(parent, name, null, appProps);
     }
 
     private VpcWithPeering(final App parent, final String name, final StackProps props, final AppProps appProps) {
-        super(parent, name, props);
+        super(parent, name, props, appProps);
+    }
+
+    protected void defineResources() {
 
         CfnVPC vpc = new CfnVPC(this, "VPC", CfnVPCProps.builder()
                 .withCidrBlock(appProps.getPropAsString("vpc_cidr"))
@@ -240,8 +243,6 @@ public class VpcWithPeering extends Stack {
                 .build());
 
 
-
-
         Map<String, PolicyDocument> natPolicies = new HashMap<>();
         natPolicies.put("ec2", new PolicyDocument().addStatement(new PolicyStatement().allow().addResource("*").addActions("ec2:AssociateAddress", "ec2:ModifyInstanceAttribute", "ec2:CreateRoute", "ec2:ReplaceRoute")));
         natPolicies.put("logs", new PolicyDocument().addStatement(new PolicyStatement().allow().addResource("*").addActions("logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents", "logs:DescribeLogStreams")));
@@ -268,7 +269,7 @@ public class VpcWithPeering extends Stack {
                 .withInstanceType("t3.micro")
                 .withKeyName(appProps.getPropAsString("keypair"))
                 .withSecurityGroups(Collections.singletonList(natSG.getSecurityGroupId()))
-                .withUserData(VpcNatCloudFormationHack.getUserData(natEip.getEipAllocationId(), rtPrivate.getRouteTableId(), name))
+                .withUserData(VpcNatCloudFormationHack.getUserData(natEip.getEipAllocationId(), rtPrivate.getRouteTableId(), stackName))
                 .build());
 
         natLaunch.addOverride("Metadata", VpcNatCloudFormationHack.getCloudFormationMetadata());
@@ -319,7 +320,7 @@ public class VpcWithPeering extends Stack {
                 .withInstanceType("t3.micro")
                 .withKeyName(appProps.getPropAsString("keypair"))
                 .withSecurityGroups(Collections.singletonList(bastionSg.getSecurityGroupId()))
-                .withUserData(VpcBastionCloudFormationHack.getUserData(bastionEip.getEipAllocationId(), name))
+                .withUserData(VpcBastionCloudFormationHack.getUserData(bastionEip.getEipAllocationId(), stackName))
                 .build());
 
         natLaunch.addOverride("Metadata", VpcBastionCloudFormationHack.getCloudFormationMetadata());

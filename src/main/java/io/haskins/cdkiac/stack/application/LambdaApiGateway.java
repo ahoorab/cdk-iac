@@ -1,31 +1,31 @@
 package io.haskins.cdkiac.stack.application;
 
 import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.stack.CdkIacStack;
+import io.haskins.cdkiac.utils.IamPolicyGenerator;
 import software.amazon.awscdk.App;
-import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.apigateway.*;
-import software.amazon.awscdk.services.iam.Role;
-import software.amazon.awscdk.services.iam.RoleProps;
-import software.amazon.awscdk.services.iam.ServicePrincipal;
+import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.lambda.CfnFunction;
 import software.amazon.awscdk.services.lambda.CfnFunctionProps;
 
-public class LambdaApiGateway extends Stack {
+public class LambdaApiGateway extends CdkIacStack {
 
     public LambdaApiGateway(final App parent, final String name, final AppProps appProps) {
         this(parent, name, null, appProps);
     }
 
     private LambdaApiGateway(final App parent, final String name, final StackProps props, final AppProps appProps) {
-        super(parent, name, props);
+        super(parent, name, props, appProps);
+    }
 
-        String uniqueId = appProps.getUniqueId();
+    protected void defineResources() {
 
-        Role appRole = new Role(this, "LambdaRole", RoleProps.builder()
+        CfnRole appRole = new CfnRole(this, "LambdaRole", CfnRoleProps.builder()
                 .withRoleName(uniqueId)
                 .withPath("/")
-                .withAssumedBy(new ServicePrincipal("lambda.amazonaws.com"))
+                .withAssumeRolePolicyDocument(IamPolicyGenerator.getServiceTrustPolicy("lambda.amazonaws.com"))
                 .build());
 
         CfnFunction lambda = new CfnFunction(this, "LambdaFunction", CfnFunctionProps.builder()
@@ -44,7 +44,7 @@ public class LambdaApiGateway extends Stack {
                 .withName(uniqueId)
                 .build());
 
-        CfnResource CfnResource = new CfnResource(this, "CfnRestApi", CfnResourceProps.builder()
+        CfnResource cfnResource = new CfnResource(this, "CfnRestApi", CfnResourceProps.builder()
                 .withPathPart("{proxy+}")
                 .withRestApiId(restApi.getRestApiId())
                 .withParentId(restApi.getRestApiRootResourceId())
@@ -52,7 +52,7 @@ public class LambdaApiGateway extends Stack {
 
         new CfnMethod(this, "RestApiMethod", CfnMethodProps.builder()
                 .withRestApiId(restApi.getRestApiId())
-                .withResourceId(CfnResource.getResourceId())
+                .withResourceId(cfnResource.getResourceId())
                 .withHttpMethod("ANY")
                 .withAuthorizationType("NONE")
                 .withIntegration(CfnMethod.IntegrationProperty.builder()

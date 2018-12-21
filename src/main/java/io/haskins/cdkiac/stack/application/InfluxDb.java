@@ -1,10 +1,11 @@
 package io.haskins.cdkiac.stack.application;
 
-import java.util.Base64;
+import java.util.*;
 
 import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.stack.CdkIacStack;
+import io.haskins.cdkiac.utils.IamPolicyGenerator;
 import software.amazon.awscdk.App;
-import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 
 import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroup;
@@ -12,35 +13,22 @@ import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroupProps;
 import software.amazon.awscdk.services.autoscaling.CfnLaunchConfiguration;
 import software.amazon.awscdk.services.autoscaling.CfnLaunchConfigurationProps;
 import software.amazon.awscdk.services.ec2.*;
+import software.amazon.awscdk.services.ec2.cloudformation.SecurityGroupIngressResourceProps;
 import software.amazon.awscdk.services.iam.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-public class InfluxDb extends Stack {
-
-    private final VpcNetworkRef vpc;
-
-    private final AppProps appProps;
+public class InfluxDb extends CdkIacStack {
 
     public InfluxDb(final App parent, final String name, final AppProps appProps) {
         this(parent, name, null, appProps);
     }
 
     private InfluxDb(final App parent, final String name, final StackProps props, final AppProps appProps) {
-        super(parent, name, props);
+        super(parent, name, props, appProps);
+    }
 
-        this.appProps = appProps;
+    protected void defineResources() {
 
-        vpc = VpcNetworkRef.import_(this,"Vpc", VpcNetworkRefProps.builder()
-                .withVpcId(appProps.getPropAsString("vpcId"))
-                .withAvailabilityZones(appProps.getPropAsStringList("availabilityZones"))
-                .withPublicSubnetIds(appProps.getPropAsStringList("elbSubnets"))
-                .withPrivateSubnetIds(appProps.getPropAsStringList("ec2Subnets"))
-                .build());
-
-        SecurityGroup sg = configureSecurityGroup();
+        CfnSecurityGroup sg = configureSecurityGroup();
 
         CfnEIP eip = configureEIP();
 
@@ -51,18 +39,22 @@ public class InfluxDb extends Stack {
         configureAutoScaling(instanceProfile, sg, eip, ebs);
     }
 
-    private SecurityGroup configureSecurityGroup() {
+    private CfnSecurityGroup configureSecurityGroup() {
 
-        SecurityGroup sg = new SecurityGroup(this,"infuxdbsg", SecurityGroupProps.builder()
-                .withAllowAllOutbound(true)
-                .withDescription("infuxdb-sg")
-                .withGroupName("infuxdb-sg")
-                .withVpc(vpc)
+        VpcNetworkRef vpc = VpcNetworkRef.import_(this,"Vpc", VpcNetworkRefProps.builder()
+                .withVpcId(appProps.getPropAsString("vpcId"))
+                .withAvailabilityZones(appProps.getPropAsStringList("availabilityZones"))
+                .withPublicSubnetIds(appProps.getPropAsStringList("elbSubnets"))
+                .withPrivateSubnetIds(appProps.getPropAsStringList("ec2Subnets"))
                 .build());
 
-        sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("myCidr")), new TcpPort(8888));
-
-        return sg;
+        return new CfnSecurityGroup(this,"infuxdbsg", CfnSecurityGroupProps.builder()
+                .withGroupName("infuxdb-sg")
+                .withGroupDescription("infuxdb-sg")
+                .withVpcId(vpc.getVpcId())
+                .withSecurityGroupIngress(
+                        Collections.singletonList(SecurityGroupIngressResourceProps.builder().withCidrIp(appProps.getPropAsString("myCidr")).withFromPort(8888).withToPort(8888).withIpProtocol("tcp").build())
+                ).build());
     }
 
     private CfnEIP configureEIP() {
@@ -84,11 +76,11 @@ public class InfluxDb extends Stack {
         Map<String, PolicyDocument> policies = new HashMap<>();
         policies.put("ec2", new PolicyDocument().addStatement(new PolicyStatement().allow().addResource("*").addActions("ec2:AssociateAddress", "ec2:AttachVolume")));
 
-        Role role = new Role(this, "influxdbrole", RoleProps.builder()
+        CfnRole role = new CfnRole(this, "influxdbrole", CfnRoleProps.builder()
                 .withRoleName("influxdb-role")
                 .withPath("/")
-                .withAssumedBy(new ServicePrincipal("ec2.amazonaws.com"))
-                .withInlinePolicies(policies)
+                .withAssumeRolePolicyDocument(IamPolicyGenerator.getServiceTrustPolicy("ec2.amazonaws.com"))
+//                .withInlinePolicies(policies)
                 .build());
 
         return new CfnInstanceProfile(this, "influxdbinstanceprofile", CfnInstanceProfileProps.builder()
@@ -100,7 +92,7 @@ public class InfluxDb extends Stack {
 
     private void configureAutoScaling(
             CfnInstanceProfile instanceProfile,
-            SecurityGroup sg,
+            CfnSecurityGroup sg,
             CfnEIP eip,
             CfnVolume ebs) {
 
