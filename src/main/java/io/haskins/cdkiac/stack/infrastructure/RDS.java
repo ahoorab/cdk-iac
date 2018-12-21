@@ -50,7 +50,7 @@ public class RDS extends CdkIacStack {
                 .withEngineVersion(appProps.getPropAsString("rds_version"))
                 .withMasterUsername("Root")
                 .withMasterUserPassword("0000") // they'll never guess that :)
-                .withMultiAz(appProps.getPropAsBoolean("rds_multi"))
+                .withMultiAz(appProps.getPropAsBoolean("rds_multi-az"))
                 .withVpcSecurityGroups(Collections.singletonList(sg.getSecurityGroupId()))
                 .withDbParameterGroupName(appProps.getPropAsString("rds_param_group"))
                 .build());

@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class IamPolicyGenerator {
 
-    private static Logger logger = LoggerFactory.getLogger(IamPolicyGenerator.class);
+    private static final Logger logger = LoggerFactory.getLogger(IamPolicyGenerator.class);
 
     private static final ObjectMapper mapper = new ObjectMapper();
 

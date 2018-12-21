@@ -1,6 +1,5 @@
 package io.haskins.cdkiac.template;
 
-import io.haskins.cdkiac.core.AppProps;
 import io.haskins.cdkiac.stack.application.BeanstalkApiGateway;
 import software.amazon.awscdk.App;
 
@@ -14,12 +13,12 @@ public class BeanstalkTemplate extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app, AppProps appProps) {
+    void defineStacks(App app) {
         new BeanstalkApiGateway(app, appProps.getUniqueId(), appProps);
     }
 
     @Override
-    void setAppProperties(AppProps appProps) {
+    void setAppProperties() {
         // none applicable
     }
 

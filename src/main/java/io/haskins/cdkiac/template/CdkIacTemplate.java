@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 abstract class CdkIacTemplate {
 
-    private static Logger logger = LoggerFactory.getLogger(CdkIacTemplate.class);
+    private static final Logger logger = LoggerFactory.getLogger(CdkIacTemplate.class);
 
     private static final String DTAP = "dtap";
     private static final String PLATFORM = "platform";
@@ -28,28 +28,28 @@ abstract class CdkIacTemplate {
 
     /**
      * Implementation of this method would provide the Stack Class that make up the application
-     * @param app
+     * @param app CDK App
      */
-    abstract void defineStacks(App app, AppProps appProps);
+    abstract void defineStacks(App app);
 
     /**
      * Implement this method if you require additional properties that fall outside of a DTAP and Platform.
      */
-    abstract void setAppProperties(AppProps appProps);
+    abstract void setAppProperties();
+
+    final AppProps appProps = new AppProps();
 
     /**
      * Default constructor
      */
     CdkIacTemplate() {
 
-        AppProps appProps = new AppProps();
-
         try {
-            populateAppProps(appProps);
-            setAppProperties(appProps);
+            populateAppProps();
+            setAppProperties();
 
             App app = new App();
-            defineStacks(app, appProps);
+            defineStacks(app);
             app.run();
         } catch(IOException ioe) {
             logger.error(ioe.getMessage());
@@ -60,30 +60,30 @@ abstract class CdkIacTemplate {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///// private methods
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private void populateAppProps(AppProps appProps) throws IOException {
+    private void populateAppProps() throws IOException {
 
         appProps.addProp("app_id", System.getProperty(APPLICATION));
 
         if (System.getProperty(DTAP) != null && System.getProperty(DTAP).length() > 0) {
-            loadProperties(appProps, String.format("%s/%s.json", DTAP, System.getProperty(DTAP)));
+            loadProperties(String.format("%s/%s.json", DTAP, System.getProperty(DTAP)));
         }
 
         if (System.getProperty(PLATFORM) != null && System.getProperty(PLATFORM).length() > 0) {
-            loadProperties(appProps,String.format("%s/%s-%s.json", PLATFORM, System.getProperty(DTAP), System.getProperty(PLATFORM)));
+            loadProperties(String.format("%s/%s-%s.json", PLATFORM, System.getProperty(DTAP), System.getProperty(PLATFORM)));
         }
 
-        loadProperties(appProps,String.format("%s/%s.json", APPLICATION, System.getProperty(APPLICATION)));
+        loadProperties(String.format("%s/%s.json", APPLICATION, System.getProperty(APPLICATION)));
     }
 
-    private void loadProperties(AppProps appProps, String property) throws IOException {
+    private void loadProperties(String property) throws IOException {
 
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classLoader.getResource(property)).getFile());
         String data = FileUtils.readFileToString(file, "UTF-8");
-        addProperties(appProps, data);
+        addProperties(data);
     }
 
-    private void addProperties(AppProps appProps, String file) {
+    private void addProperties(String file) {
 
         Gson gson = new Gson();
         Type type = new TypeToken<Map<String, String>>(){}.getType();

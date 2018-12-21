@@ -13,7 +13,7 @@ public class BaseTest {
 
     protected final AppProps appProps = new AppProps();
 
-    private DumperOptions options = new DumperOptions();
+    private final DumperOptions options = new DumperOptions();
     private Yaml yaml;
 
     public void setup() {

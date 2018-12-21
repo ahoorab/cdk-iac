@@ -11,8 +11,8 @@ public abstract class CdkIacStack extends Stack {
 
     protected final AppProps appProps;
 
-    protected String uniqueId;
-    protected String stackName;
+    protected final String uniqueId;
+    protected final String stackName;
 
     protected CdkIacStack(final App parent, final String name, final StackProps props, final AppProps appProperties) {
 

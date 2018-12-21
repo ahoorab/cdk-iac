@@ -1,6 +1,5 @@
 package io.haskins.cdkiac.template;
 
-import io.haskins.cdkiac.core.AppProps;
 import io.haskins.cdkiac.stack.application.LambdaApiGateway;
 import software.amazon.awscdk.App;
 
@@ -14,7 +13,7 @@ public class HelloWorldFunction  extends CdkIacTemplate {
     }
 
     @Override
-    void setAppProperties(AppProps appProps) {
+    void setAppProperties() {
         appProps.addProp("runtime", "python3.6");
         appProps.addProp("memory_size", "128");
         appProps.addProp("handler", "lambda_function.lambda_handler");
@@ -23,7 +22,7 @@ public class HelloWorldFunction  extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app, AppProps appProps) {
+    void defineStacks(App app) {
         new LambdaApiGateway(app, appProps.getUniqueId(), appProps);
     }
 

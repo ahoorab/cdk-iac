@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class AppProps {
 
-    private static Logger logger = LoggerFactory.getLogger(AppProps.class);
+    private static final Logger logger = LoggerFactory.getLogger(AppProps.class);
 
     private final Map<String, String> props = new HashMap<>();
 
