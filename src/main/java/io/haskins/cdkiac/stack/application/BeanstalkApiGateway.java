@@ -2,7 +2,7 @@ package io.haskins.cdkiac.stack.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.utils.AppProps;
 import io.haskins.cdkiac.stack.CdkIacStack;
 import io.haskins.cdkiac.utils.IamPolicyGenerator;
 import software.amazon.awscdk.App;

@@ -1,6 +1,6 @@
 package io.haskins.cdkiac.template;
 
-import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.utils.AppProps;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -23,7 +23,7 @@ abstract class CdkIacTemplate {
     private static final Logger logger = LoggerFactory.getLogger(CdkIacTemplate.class);
 
     private static final String DTAP = "dtap";
-    private static final String PLATFORM = "platform";
+    private static final String VPC = "vpc";
     private static final String APPLICATION = "application";
 
     /**
@@ -68,8 +68,8 @@ abstract class CdkIacTemplate {
             loadProperties(String.format("%s/%s.json", DTAP, System.getProperty(DTAP)));
         }
 
-        if (System.getProperty(PLATFORM) != null && System.getProperty(PLATFORM).length() > 0) {
-            loadProperties(String.format("%s/%s-%s.json", PLATFORM, System.getProperty(DTAP), System.getProperty(PLATFORM)));
+        if (System.getProperty(VPC) != null && System.getProperty(VPC).length() > 0) {
+            loadProperties(String.format("%s/%s-%s.json", VPC, System.getProperty(DTAP), System.getProperty(VPC)));
         }
 
         loadProperties(String.format("%s/%s.json", APPLICATION, System.getProperty(APPLICATION)));

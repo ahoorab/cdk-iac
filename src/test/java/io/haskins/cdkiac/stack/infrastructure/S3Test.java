@@ -13,7 +13,7 @@ public class S3Test extends BaseTest {
         appProps.clear();
 
         appProps.addProp("dtap","dtap");
-        appProps.addProp("platform","platform");
+        appProps.addProp("vpc", "vpc");
         appProps.addProp("app_id","s3");
     }
 

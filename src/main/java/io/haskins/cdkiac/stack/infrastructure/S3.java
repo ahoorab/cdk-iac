@@ -1,6 +1,6 @@
 package io.haskins.cdkiac.stack.infrastructure;
 
-import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.utils.AppProps;
 import io.haskins.cdkiac.stack.CdkIacStack;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.StackProps;

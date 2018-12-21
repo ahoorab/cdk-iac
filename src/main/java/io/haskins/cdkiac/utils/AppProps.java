@@ -1,4 +1,4 @@
-package io.haskins.cdkiac.core;
+package io.haskins.cdkiac.utils;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Utility model class for holding dtap/platform/template specific configuration data
+ * Utility model class for holding dtap/vpc/template specific configuration data
  */
 public class AppProps {
 
@@ -77,7 +77,7 @@ public class AppProps {
 
     /**
      * <p>Generates a unique ID based on the DTAP, Platform if provided, and Application id.</p>
-     * @return  <p>Examples are: dtap-platform-app_id  or   dtap-app_id</p>
+     * @return  <p>Examples are: dtap-vpc-app_id  or   dtap-app_id</p>
      */
     public String getUniqueId() {
 
@@ -87,8 +87,8 @@ public class AppProps {
             id.append(getPropAsString("dtap")).append("-");
         }
 
-        if (props.containsKey("platform")) {
-            id.append(getPropAsString("platform")).append("-");
+        if (props.containsKey("vpc")) {
+            id.append(getPropAsString("vpc")).append("-");
         }
 
         if (props.containsKey("app_id")) {

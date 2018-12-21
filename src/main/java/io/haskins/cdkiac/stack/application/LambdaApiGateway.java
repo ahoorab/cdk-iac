@@ -1,6 +1,6 @@
 package io.haskins.cdkiac.stack.application;
 
-import io.haskins.cdkiac.core.AppProps;
+import io.haskins.cdkiac.utils.AppProps;
 import io.haskins.cdkiac.stack.CdkIacStack;
 import io.haskins.cdkiac.utils.IamPolicyGenerator;
 import software.amazon.awscdk.App;

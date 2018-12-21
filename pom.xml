@@ -51,7 +51,6 @@
                 <version>3.0.0</version>
                 <configuration>
                     <source>1.8</source>
-                    <target>1.8</target>
                     <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
                     <destDir>docs</destDir>
                 </configuration>
