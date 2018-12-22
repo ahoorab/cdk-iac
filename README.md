@@ -1,13 +1,13 @@
 # cdk-iac
 
-**20/12/18 - Updated to 0.21**
+**20/12/18 - Updated to 0.21.0**
 
 
 ## overview 
 The idea behind this project is to take the recently announced [CDK](https://awslabs.github.io/aws-cdk/index.html)
-and try and build a multiple application management tool around it.
+and try and build a multiple application, management tool, around it.
 
-Over the years I've developed a few systems (in Python and Java) that essentially did the same thing as CDK does,
+Over the years I've developed a few systems, (in Python and Java), that essentially did the same thing as CDK does;
 programmatically generating CloudFormation templates, and creating the stacks.
 
 I like what they have done so far with CDK, and I'm sure that as it moves closer to version 1.0.0 it will increase in
@@ -18,6 +18,8 @@ coverage and functionality. In the mean time ...
 The idea of this project is to take CDK and build a multi CDK App/Stack / Application management and deployment application.
 What I wanted to achieve is to be able to create a CDK Stack that could be reused, along with CDK App that could also be
 reused.
+
+I work as a Cloud Engineer / DevOp so I would love to have a single place where I can store and mange all of my AWS Resource from. I also want to be able to normalise the stacks by defining Constructs that perform tasks specific to my needs without have to duplicate code. 
 
 
 **Presently with CDK:**
@@ -40,8 +42,8 @@ How this project attempts to solve these potential problems:
 ### Resources
 * application : Where to store properties files for individual applications
 * dtap : Where to store AWS account specific properties
-* platform : Where to store VPC specific properties
-Note DTAP might be renamed in the future
+* vpc : Where to store VPC specific properties
+Note: DTAP might be renamed in the future.
 
 
 ## usage
@@ -66,3 +68,20 @@ This allows you define an EC2 KeyPair in the DTAP, but override it in the Vpc.
 6. Again there is a call to the original class to get the Stack definitions.
 7. run is then Invoked on the CDK App
 8. CDK then performs whichever command you gave it
+
+## Created AWS Resource
+### Unique ID
+Part of my requirements where to enforce a consitent naming convention across all stacks and created resources. There is a function in the AppProps class that will generate a unique id based on the following data:
+* DTAP
+* VPC (if provided)
+* Application Name
+
+So if you provide all the details the unqiue id would be **dtap-vpc-app_name**, if you miss out VPC then it would be **dtap-vpc**. Most of my example stacks use this unqiue ID to name all of their resources. By thinking behind this is that each application requires resources, and by ensureing that each associate resource has a unique name that follows a convention, it is easy to see what belong to what.
+
+As it stands I can see potential problems with multi region, especially for services that don't have the concept of different regions e.g IAM so I may need to add a Region flag that adds a region to the unique Id in the future.
+
+### Profiles <- future work
+You define a DTAP when you call the cdk-iac.sh file, this is currently used to read the appropriate DTAP properties from the resources directory, though the commands still use whatever API keys are configure as your [default] in the .aws/credentials file. What I need to do here is use the passed in DTAP parameter and pass this into CDK using the --profile parameter in order that the commands run against the correct accounts.
+
+## My Stacks
+In the Stacks directory you will find some stacks that I have created by way of seeing if it is possible to migrate our existing AWS Resource creation systems (CloudFormation, Ansible, AWS SDK) to use CDK. It is not my intention at this time to create examples of every possible CfnResource but it do expect this to fill out as I do the migrations.
