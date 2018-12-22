@@ -59,9 +59,10 @@ To perform a CDK action against one of your applications you would do the follow
 ## What happens when you use the above command?
 1. The .sh script runs the Java class indicated by the -t flag and passes in the properties
 2. The 'main' method instaniates the class which calls 'super' through to CdkIacTemplate
-3. CdkIacTemplate loads any properties in this order : DTAP, Platform
-4, It then calls up to the original class to get any properties defined there.
-5. Properties are stored in this order Dtap, Platform, Application. Duplicate keys will be overridden by newer properties.
-This allows you define an EC2 KeyPair in the DTAP, but override it in the Platform.
+3. CdkIacTemplate loads any properties in this order : DTAP then Vpc
+4. It then calls up to the original class to get any properties defined there.
+5. Properties are stored in this order Dtap, Vpc, Application. Duplicate keys will be overridden by newer properties.
+This allows you define an EC2 KeyPair in the DTAP, but override it in the Vpc.
 6. Again there is a call to the original class to get the Stack definitions.
 7. run is then Invoked on the CDK App
+8. CDK then performs whichever command you gave it
