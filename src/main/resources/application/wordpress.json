@@ -1,4 +1,4 @@
 {
-  "solution_stack": "64bit Amazon Linux 2018.03 v2.7.7 running Java 8",
+  "solution_stack": "664bit Amazon Linux 2018.03 v2.8.5 running PHP 7.2",
   "instance_type": "t2.small"
 }
