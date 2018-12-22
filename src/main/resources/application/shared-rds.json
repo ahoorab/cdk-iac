@@ -1,0 +1,9 @@
+{
+  "rds_storage": "10",
+  "rds_ec2": "db.t2.medium",
+  "rds_subnet": "subnet-group",
+  "rds_engine": "mysql",
+  "rds_version": "5.7.23",
+  "rds_multi-az": "false",
+  "rds_param_group": "param-group"
+}

@@ -1,0 +1,7 @@
+{
+  "runtime": "python3.6",
+  "memory_size": "128",
+  "handler": "lambda_function.lambda_handler",
+  "code_bucket": "my-bucket",
+  "code_key": "hello-world-function.zip"
+}

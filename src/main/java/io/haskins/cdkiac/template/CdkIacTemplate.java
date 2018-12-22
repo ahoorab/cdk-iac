@@ -33,11 +33,6 @@ abstract class CdkIacTemplate {
      */
     abstract void defineStacks(App app);
 
-    /**
-     * Implement this method if you require additional properties that fall outside of a DTAP and Platform.
-     */
-    abstract void setAppProperties();
-
     final AppProps appProps = new AppProps();
 
     /**
@@ -47,7 +42,6 @@ abstract class CdkIacTemplate {
 
         try {
             populateAppProps();
-            setAppProperties();
 
             App app = new App();
             defineStacks(app);

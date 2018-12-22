@@ -17,11 +17,6 @@ public class BeanstalkTemplate extends CdkIacTemplate {
         new BeanstalkApiGateway(app, appProps.getUniqueId(), appProps);
     }
 
-    @Override
-    void setAppProperties() {
-        // none applicable
-    }
-
     public static void main(final String[] args) {
         new BeanstalkTemplate();
     }

@@ -17,10 +17,6 @@ public class MyS3 extends CdkIacTemplate {
         new S3(app, appProps.getUniqueId(), appProps);
     }
 
-    @Override
-    void setAppProperties() {
-    }
-
     public static void main(final String[] args) {
         new MyS3();
     }

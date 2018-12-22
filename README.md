@@ -5,7 +5,7 @@
 
 ## overview 
 The idea behind this project is to take the recently announced [CDK](https://awslabs.github.io/aws-cdk/index.html)
-and try and build a multiple application, management tool, around it.
+and try and build a multi application management tool around it.
 
 Over the years I've developed a few systems, (in Python and Java), that essentially did the same thing as CDK does;
 programmatically generating CloudFormation templates, and creating the stacks.
@@ -21,31 +21,35 @@ reused.
 
 I work as a Cloud Engineer / DevOp so I would love to have a single place where I can store and mange all of my AWS 
 Resource from. I also want to be able to normalise the stacks by defining Constructs that perform tasks specific to 
-my needs without have to duplicate code. 
+my needs without have to duplicate code across multiple stacks. 
 
 
 **Presently with CDK:**
-* when you create an 'main' class that you add the Stack too, you hardcode the name of that stack
-* you can add parameters to the cdk.json but this isn't really scalable
+* when you create an 'main' class that you add the Stack too, you hardcode the name of the CloudFormation stack
+* you can add parameters to the cdk.json but this isn't really scalable across a large number of applications in multiple 
+AWS account and VPCs.
 * there are other ways of passing parameters in, but these could still be annoying to manage
 
-How this project attempts to solve these potential problems:
+**How this project attempts to solve these potential problems:**
 * the 'main' class (or template as this project refers to them) can be reused across similar applications
-* You can define properties in external files to provide good flexibility
+* the name of the CloudFormation stack is dynamic even when using the same Template file
+* You can define properties in external files to provide good scalability for applications/DTAPs and VPCs.
 
 # How to use
 Using the tool is very simple.
 1. git clone the project
-2. remove my applications, infrastructure, template and resource files if you will not be needing them
-3. add your own applications, infrastructure, template files and create your own resources
+2. remove my Template, Stacks and resource files if you will not be needing them*
+3. add your own Template and Stack files along with your own resources
 4. run the cdk-iac.sh script (see below)
+
+*If you want to use my Stacks as examples to get yourself started feel free.
 
 
 # Implementation
 ## Structure
 ### Java classes
 * stack : Contains the classes that define the Cloudformation stacks
-* template : The 'main' classes that CDK calls initially
+* template : The 'main' classes that CDK calls initially, that defines an Application structure
 * utils : Contains global utility classes
 
 
@@ -65,25 +69,27 @@ To perform a CDK action against one of your applications you would do the follow
 * -t Name of the template to stamp out
 * -a Name to give the application
 * -d Your DTAP e.g. dev for your developer account
-* -v If you have multiple vpcs in an AWS then use this flag
+* -v If you have multiple vpcs in an AWS then you can use this flag to target specific a VPC if required
+* -p Flag to indicate you want to use an AWS Credentials profile.
 
 
 ### What happens when you use the above command?
 1. The .sh script runs the Java class indicated by the -t flag and passes in the properties
 2. The 'main' method instaniates the class which calls 'super' through to CdkIacTemplate
-3. CdkIacTemplate loads any properties in this order : DTAP then Vpc
-4. It then calls up to the original class to get any properties defined there.
-5. Properties are stored in this order Dtap, Vpc, Application. Duplicate keys will be overridden by newer properties.
-This allows you define an EC2 KeyPair in the DTAP, but override it in the Vpc.
-6. Again there is a call to the original class to get the Stack definitions.
-7. run is then Invoked on the CDK App
-8. CDK then performs whichever command you gave it
+3. CdkIacTemplate loads any properties defined in the resources folder
+4. Properties are loaded in this order:- Dtap, Vpc, Application. Duplicate keys will be overridden by newer properties.
+This allows you define an EC2 KeyPair in the DTAP, but override it with a value in a Vpc.
+5. A call is made to the original class to get the Stack definitions.
+6. run is then Invoked on the CDK App
+7. CDK then performs whichever command you gave it
 
-### Creating two applications using the same Template but with different configurations
+### Creating two applications using the same Template, but with different configurations
 By defining application properties in the resources section you can use the same Template that creates similar stacks, but
 with different configurations.
 
-When using the BeanstalkTemplate the following resources will be created:
+When using the include BeanstalkTemplate for example, the following resources will be created when the BeanstalkApiGateway
+stack is called:
+
 * IAM Roles
 * Beanstalk Application and Environment
 * API Gateway RestAPI, Resource and Method
@@ -93,38 +99,44 @@ In the /resources/application folder you can see that I have defined two applica
 * wordpress
 
 If I run the command ```./cdk-iac.sh -c synth -t BeanstalkTemplate -a wordpress -d dev``` Beanstalk will be configured
-with a PHP solution stack and a t2.small instance. Running the command
-```./cdk-iac.sh -c synth -t BeanstalkTemplate -a microservice -d dev``` will configured Beanstalk using a Python
-Solution Stack and a m5.medium instance.
+with a PHP solution stack and a t2.small instance. 
+Running the command ```./cdk-iac.sh -c synth -t BeanstalkTemplate -a microservice -d dev``` will configured Beanstalk 
+using a Python Solution Stack and a m5.medium instance.
 
 This could mean, as an example, that you define a consistent infrastructure for your mircoservices (beanstalk behind API
-Gateway as an example) then you simple need to define the properties for the individual applications. This makes 'stamping'
-out new application infrastructure very easy.
+Gateway as an example) then you simply need to define the properties for the individual applications. This makes 
+'stamping' out new application infrastructure in a standard and consistent process very easy. And don't forget that by
+used the power of CDK you can always update these applications easily.
 
 
 ## Created AWS Resource
 ### Unique ID
-Part of my requirements where to enforce a consitent naming convention across all stacks and created resources. There is
+Part of my requirements were to enforce a consistent naming convention across all stacks and created resources. There is
 a function in the AppProps class that will generate a unique id based on the following data:
+
 * DTAP
 * VPC (if provided)
 * Application Name
 
-So if you provide all the details the unqiue id would be **dtap-vpc-app_name**, if you miss out VPC then it would be 
-**dtap-vpc**. Most of my example stacks use this unqiue ID to name all of their resources. By thinking behind this is 
-that each application requires resources, and by ensureing that each associate resource has a unique name that follows
-a convention, it is easy to see what belong to what.
+If you provide all the above details the unique id would be **dtap-vpc-appname**. If you miss out VPC then it would be 
+**dtap-appname**. Most of my example stacks use this unique ID to name all of their resources. My thinking behind this
+is that each application requires resources, and by ensuring that each associated resource has a unique name that follows
+a convention, it is easy to see what belongs to what.
 
 As it stands I can see potential problems with multi region, especially for services that don't have the concept of 
 different regions e.g IAM so I may need to add a Region flag that adds a region to the unique Id in the future.
+An example of this would be if you want to deploy a Wordpress application into two different regions as it stands you
+coudn't as the script would try and create IAM resources will the same name twice e.g dev-wordpress. By adding the
+ability to include the region this would become dev-eu-west-1-wordpress. 
 
-### Profiles <- future work
+### Profiles
 You define a DTAP when you call the cdk-iac.sh file, this is currently used to read the appropriate DTAP properties from 
-the resources directory, though the commands still use whatever API keys are configure as your [default] in the 
-.aws/credentials file. What I need to do here is use the passed in DTAP parameter and pass this into CDK using the 
---profile parameter in order that the commands run against the correct accounts.
+the resources directory. The command uses whatever API keys are configure as your [default] in the 
+.aws/credentials file.
+To use a set of credentials that have been defined as a profile in your ~/.aws/credentials file the you can use the -p
+flag. When this flag is added the script will attempt to use a profile with the same name as the passed DTAP.
 
-## My Stacks
+# My Stacks
 In the Stacks directory you will find some stacks that I have created by way of seeing if it is possible to migrate our 
 existing AWS Resource creation systems (CloudFormation, Ansible, AWS SDK) to use CDK. It is not my intention at this 
 time to create Java examples of every possible CfnResource, but it do expect this to fill out as I do the migrations.
