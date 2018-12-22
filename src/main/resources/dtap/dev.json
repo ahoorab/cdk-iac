@@ -1,6 +1,5 @@
 {
   "account_id": "01234567890",
-  "dtap": "dev",
   "keypair": "DevOps",
 
   "availability_zones": "eu-west-1a, eu-west-1b, eu-west-1c",

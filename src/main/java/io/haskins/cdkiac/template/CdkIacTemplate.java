@@ -12,6 +12,7 @@ import software.amazon.awscdk.App;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Objects;
 
@@ -66,10 +67,12 @@ abstract class CdkIacTemplate {
 
         if (System.getProperty(DTAP) != null && System.getProperty(DTAP).length() > 0) {
             loadProperties(String.format("%s/%s.json", DTAP, System.getProperty(DTAP)));
+            appProps.addProp("dtap", System.getProperty(DTAP));
         }
 
         if (System.getProperty(VPC) != null && System.getProperty(VPC).length() > 0) {
-            loadProperties(String.format("%s/%s-%s.json", VPC, System.getProperty(DTAP), System.getProperty(VPC)));
+            loadProperties(String.format("%s/%s.json", VPC, System.getProperty(VPC)));
+            appProps.addProp("vpc", System.getProperty(VPC));
         }
 
         loadProperties(String.format("%s/%s.json", APPLICATION, System.getProperty(APPLICATION)));
@@ -79,7 +82,7 @@ abstract class CdkIacTemplate {
 
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classLoader.getResource(property)).getFile());
-        String data = FileUtils.readFileToString(file, "UTF-8");
+        String data = FileUtils.readFileToString(file, Charset.forName("utf-8"));
         addProperties(data);
     }
 
