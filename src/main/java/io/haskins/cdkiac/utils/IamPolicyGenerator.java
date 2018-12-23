@@ -29,7 +29,7 @@ public class IamPolicyGenerator {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Generates a Service Trust Policy for the passed princip
+     * Generates a Service Trust Policy for the passed principal
      * @param service e.g. ec2.amazonaws.com
      * @return  <pre>
      *     {
@@ -38,7 +38,7 @@ public class IamPolicyGenerator {
      *     {
      *       "Effect": "Allow",
      *       "Principal": {
-     *         "Service": "ec2.amazonaws.com"
+     *         "Service": ">>service<<"
      *       },
      *       "Action": "sts:AssumeRole"
      *     }
