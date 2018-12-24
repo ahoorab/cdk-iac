@@ -29,7 +29,12 @@ public class AppPropsTest {
         String expected = "Value";
 
         appProps.addProp("Key", expected);
-        String property = appProps.getPropAsString("Key");
+        String property = null;
+        try {
+            property = appProps.getPropAsString("Key");
+        } catch (MissingPropertyException e) {
+            Assert.fail("Key not in appProperties");
+        }
 
         Assert.assertEquals(expected, property);
     }
@@ -40,7 +45,12 @@ public class AppPropsTest {
         int expected = 10;
 
         appProps.addProp("Key", "10");
-        int property = appProps.getPropAsInteger("Key");
+        int property = 0;
+        try {
+            property = appProps.getPropAsInteger("Key");
+        } catch (MissingPropertyException e) {
+            Assert.fail("Key not in appProperties");
+        }
 
         Assert.assertEquals(expected, property);
     }
@@ -51,7 +61,12 @@ public class AppPropsTest {
         boolean expected = false;
 
         appProps.addProp("Key", "false");
-        boolean property = appProps.getPropAsBoolean("Key");
+        boolean property = false;
+        try {
+            property = appProps.getPropAsBoolean("Key");
+        } catch (MissingPropertyException e) {
+            Assert.fail("Key not in appProperties");
+        }
 
         Assert.assertEquals(expected, property);
     }
@@ -62,7 +77,12 @@ public class AppPropsTest {
         List<String> expected = Arrays.asList("tom","dick","harry");
 
         appProps.addProp("Key", "tom,dick,harry");
-        List<String> property = appProps.getPropAsStringList("Key");
+        List<String> property = null;
+        try {
+            property = appProps.getPropAsStringList("Key");
+        } catch (MissingPropertyException e) {
+            Assert.fail("Key not in appProperties");
+        }
 
         Assert.assertEquals(expected, property);
         Assert.assertEquals(3, property.size());
@@ -74,7 +94,12 @@ public class AppPropsTest {
         List<Object> expected = Arrays.asList("tom","dick","harry");
 
         appProps.addProp("Key", "tom,dick,harry");
-        List<Object> property = appProps.getPropAsObjectList("Key");
+        List<Object> property = null;
+        try {
+            property = appProps.getPropAsObjectList("Key");
+        } catch (MissingPropertyException e) {
+            Assert.fail("Key not in appProperties");
+        }
 
         Assert.assertEquals(expected, property);
         Assert.assertEquals(3, property.size());
@@ -89,7 +114,12 @@ public class AppPropsTest {
 
         String expected = "dev-a-test";
 
-        String uniqueId = appProps.getUniqueId();
+        String uniqueId = null;
+        try {
+            uniqueId = appProps.getUniqueId();
+        } catch (MissingPropertyException e) {
+            Assert.fail("Key not in appProperties");
+        }
 
         Assert.assertEquals(expected, uniqueId);
     }
@@ -102,7 +132,12 @@ public class AppPropsTest {
 
         String expected = "dev-test";
 
-        String uniqueId = appProps.getUniqueId();
+        String uniqueId = null;
+        try {
+            uniqueId = appProps.getUniqueId();
+        } catch (MissingPropertyException e) {
+            Assert.fail("Key not in appProperties");
+        }
 
         Assert.assertEquals(expected, uniqueId);
     }

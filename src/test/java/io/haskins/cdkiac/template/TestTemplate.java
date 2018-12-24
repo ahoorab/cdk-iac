@@ -1,10 +1,16 @@
 package io.haskins.cdkiac.template;
 
+import io.haskins.cdkiac.stack.StackException;
+import io.haskins.cdkiac.utils.MissingPropertyException;
 import software.amazon.awscdk.App;
 
-public class TestTemplate extends CdkIacTemplate {
+class TestTemplate extends CdkIacTemplate {
 
-    void defineStacks(App app) {
+    public TestTemplate() throws TemplateException {
+        super();
+    }
+
+    void defineStacks(App app) throws MissingPropertyException, StackException {
 
     }
 }

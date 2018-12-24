@@ -1,5 +1,7 @@
 package io.haskins.cdkiac.stack.infrastructure;
 
+import io.haskins.cdkiac.stack.StackException;
+import io.haskins.cdkiac.utils.MissingPropertyException;
 import io.haskins.cdkiac.utils.AppProps;
 import io.haskins.cdkiac.stack.CdkIacStack;
 import software.amazon.awscdk.App;
@@ -13,46 +15,60 @@ import java.util.Collections;
 
 public class RDS extends CdkIacStack {
 
-    public RDS(final App parent, final String name, final AppProps appProps) {
+    public RDS(final App parent,
+               final String name,
+               final AppProps appProps) throws StackException {
+
         this(parent, name, null, appProps);
     }
 
-    private RDS(final App parent, final String name, final StackProps props, final AppProps appProps) {
+    private RDS(final App parent,
+                final String name,
+                final StackProps props,
+                final AppProps appProps) throws StackException {
+
         super(parent, name, props, appProps);
     }
 
-    protected void defineResources() {
+    protected void defineResources() throws StackException{
 
-        VpcNetworkRef vpc = VpcNetworkRef.import_(this,"Vpc", VpcNetworkRefProps.builder()
-                .withVpcId(appProps.getPropAsString("vpc_id"))
-                .withAvailabilityZones(appProps.getPropAsStringList("availability_zones"))
-                .withPublicSubnetIds(appProps.getPropAsStringList("elb_subnets"))
-                .withPrivateSubnetIds(appProps.getPropAsStringList("ec2_subnets"))
-                .build());
+        try {
 
-        SecurityGroup sg = new SecurityGroup(this,"RdsSecurityGroup", SecurityGroupProps.builder()
-                .withAllowAllOutbound(true)
-                .withDescription(uniqueId)
-                .withGroupName(uniqueId)
-                .withVpc(vpc)
-                .build());
+            VpcNetworkRef vpc = VpcNetworkRef.import_(this,"Vpc", VpcNetworkRefProps.builder()
+                    .withVpcId(appProps.getPropAsString("vpc_id"))
+                    .withAvailabilityZones(appProps.getPropAsStringList("availability_zones"))
+                    .withPublicSubnetIds(appProps.getPropAsStringList("elb_subnets"))
+                    .withPrivateSubnetIds(appProps.getPropAsStringList("ec2_subnets"))
+                    .build());
 
-        sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("my_cidr")), new TcpPort(3306));
-        sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("vpc_cidr")), new TcpPort(3306));
+            SecurityGroup sg = new SecurityGroup(this,"RdsSecurityGroup", SecurityGroupProps.builder()
+                    .withAllowAllOutbound(true)
+                    .withDescription(uniqueId)
+                    .withGroupName(uniqueId)
+                    .withVpc(vpc)
+                    .build());
 
-        new CfnDBInstance(this, "Rds", CfnDBInstanceProps.builder()
-                .withAllocatedStorage(appProps.getPropAsString("rds_storage"))
-                .withStorageType("gp2")
-                .withDbInstanceClass(appProps.getPropAsString("rds_ec2"))
-                .withDbInstanceIdentifier(uniqueId)
-                .withDbSubnetGroupName(appProps.getPropAsString("rds_subnet"))
-                .withEngine(appProps.getPropAsString("rds_engine"))
-                .withEngineVersion(appProps.getPropAsString("rds_version"))
-                .withMasterUsername("Root")
-                .withMasterUserPassword("0000") // they'll never guess that :)
-                .withMultiAz(appProps.getPropAsBoolean("rds_multi-az"))
-                .withVpcSecurityGroups(Collections.singletonList(sg.getSecurityGroupId()))
-                .withDbParameterGroupName(appProps.getPropAsString("rds_param_group"))
-                .build());
+            sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("my_cidr")), new TcpPort(3306));
+            sg.addIngressRule(new CidrIPv4(appProps.getPropAsString("vpc_cidr")), new TcpPort(3306));
+
+            new CfnDBInstance(this, "Rds", CfnDBInstanceProps.builder()
+                    .withAllocatedStorage(appProps.getPropAsString("rds_storage"))
+                    .withStorageType("gp2")
+                    .withDbInstanceClass(appProps.getPropAsString("rds_ec2"))
+                    .withDbInstanceIdentifier(uniqueId)
+                    .withDbSubnetGroupName(appProps.getPropAsString("rds_subnet"))
+                    .withEngine(appProps.getPropAsString("rds_engine"))
+                    .withEngineVersion(appProps.getPropAsString("rds_version"))
+                    .withMasterUsername("Root")
+                    .withMasterUserPassword("0000") // they'll never guess that :)
+                    .withMultiAz(appProps.getPropAsBoolean("rds_multi-az"))
+                    .withVpcSecurityGroups(Collections.singletonList(sg.getSecurityGroupId()))
+                    .withDbParameterGroupName(appProps.getPropAsString("rds_param_group"))
+                    .build());
+
+        } catch (MissingPropertyException e) {
+            throw new StackException(e.getMessage());
+        }
+
     }
 }

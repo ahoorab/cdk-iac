@@ -2,8 +2,6 @@ package io.haskins.cdkiac.utils;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +11,6 @@ import java.util.Map;
  * Utility model class for holding dtap/vpc/template specific configuration data
  */
 public class AppProps {
-
-    private static final Logger logger = LoggerFactory.getLogger(AppProps.class);
 
     private final Map<String, String> props = new HashMap<>();
 
@@ -32,7 +28,7 @@ public class AppProps {
      * @param key key of the value
      * @return value as a string
      */
-    public String getPropAsString(String key) {
+    public String getPropAsString(String key) throws MissingPropertyException {
         return getPropertyByKey(key);
     }
 
@@ -42,7 +38,7 @@ public class AppProps {
      * @return value as an Integer
      * @exception NumberFormatException will be thrown if the value can not be parsed as an Int
      */
-    public Integer getPropAsInteger(String key) {
+    public Integer getPropAsInteger(String key) throws MissingPropertyException {
         return Integer.parseInt(getPropertyByKey(key));
     }
 
@@ -51,7 +47,7 @@ public class AppProps {
      * @param key key of the value
      * @return value as a Boolean
      */
-    public Boolean getPropAsBoolean(String key) {
+    public Boolean getPropAsBoolean(String key) throws MissingPropertyException {
         return Boolean.parseBoolean(getPropertyByKey(key));
     }
 
@@ -60,7 +56,7 @@ public class AppProps {
      * @param key key of the value
      * @return returns a List of Strings. This is done by Splitting the string around any commas
      */
-    public List<String> getPropAsStringList(String key) {
+    public List<String> getPropAsStringList(String key) throws MissingPropertyException {
         String value = getPropertyByKey(key);
         return Lists.newArrayList(Splitter.on(",").split(value));
     }
@@ -70,7 +66,7 @@ public class AppProps {
      * @param key key of the value
      * @return returns a List of Objects. This is done by Splitting the string around any commas
      */
-    public List<Object> getPropAsObjectList(String key) {
+    public List<Object> getPropAsObjectList(String key) throws MissingPropertyException {
         String value = getPropertyByKey(key);
         return Lists.newArrayList(Splitter.on(",").split(value));
     }
@@ -79,12 +75,14 @@ public class AppProps {
      * <p>Generates a unique ID based on the DTAP, Platform if provided, and Application id.</p>
      * @return  <p>Examples are: dtap-vpc-app_id  or   dtap-app_id</p>
      */
-    public String getUniqueId() {
+    public String getUniqueId() throws MissingPropertyException {
 
         StringBuilder id = new StringBuilder();
 
         if (props.containsKey("dtap")) {
             id.append(getPropAsString("dtap")).append("-");
+        } else {
+            throw new MissingPropertyException("System Property -Ddtap not found");
         }
 
         if (props.containsKey("vpc")) {
@@ -93,6 +91,8 @@ public class AppProps {
 
         if (props.containsKey("app_id")) {
             id.append(getPropAsString("app_id"));
+        } else {
+            throw new MissingPropertyException("System Property -Dapplication not found");
         }
 
         return id.toString();
@@ -109,16 +109,15 @@ public class AppProps {
      * returns the number of properties
      * @return int value
      */
-    public int size() { return this.props.size(); }
+    int size() { return this.props.size(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///// private methods
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private String getPropertyByKey(String key) {
+    private String getPropertyByKey(String key) throws MissingPropertyException  {
 
         if (!props.containsKey(key)) {
-            logger.error(String.format("Property %s not found", key));
-            System.exit(1);
+            throw new MissingPropertyException(String.format("Property %s not found", key));
         }
 
         return this.props.get(key);

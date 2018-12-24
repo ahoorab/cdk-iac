@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: $0 [Options] <cdk-command> <template> <application> <dtap> "
+    echo "Usage: $0 [Options] <cdk-command> <template> <application> <dtap>"
     echo "Options:";
     echo "  -v  VPC";
     echo "  -p  Use DTAP as profile";

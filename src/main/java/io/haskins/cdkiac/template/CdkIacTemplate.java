@@ -1,27 +1,25 @@
 package io.haskins.cdkiac.template;
 
+import io.haskins.cdkiac.stack.StackException;
+import io.haskins.cdkiac.utils.MissingPropertyException;
 import io.haskins.cdkiac.utils.AppProps;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import software.amazon.awscdk.App;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Abstract class that all Template classes should extend.
  */
 abstract class CdkIacTemplate {
-
-    private static final Logger logger = LoggerFactory.getLogger(CdkIacTemplate.class);
 
     private static final String DTAP = "dtap";
     private static final String VPC = "vpc";
@@ -34,7 +32,7 @@ abstract class CdkIacTemplate {
      * Implementation of this method would provide the Stack Class that make up the application
      * @param app CDK App
      */
-    abstract void defineStacks(App app);
+    abstract void defineStacks(App app) throws MissingPropertyException, StackException;
 
     final AppProps appProps = new AppProps();
     private boolean dryRun = false;
@@ -42,7 +40,7 @@ abstract class CdkIacTemplate {
     /**
      * Default constructor
      */
-    CdkIacTemplate() {
+    CdkIacTemplate() throws TemplateException {
 
         try {
             populateAppProps();
@@ -52,9 +50,8 @@ abstract class CdkIacTemplate {
             if (!dryRun) {
                 app.run();
             }
-        } catch(IOException ioe) {
-            logger.error(ioe.getMessage());
-            System.exit(1);
+        } catch(IOException | MissingPropertyException | StackException e) {
+            throw new TemplateException(e.getMessage());
         }
     }
 
@@ -85,9 +82,15 @@ abstract class CdkIacTemplate {
     private void loadProperties(String property) throws IOException {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(Objects.requireNonNull(classLoader.getResource(property)).getFile());
-        String data = FileUtils.readFileToString(file, Charset.forName("utf-8"));
-        addProperties(data);
+        URL url = classLoader.getResource(property);
+        try {
+            File file = new File(url.getFile());
+            String data = FileUtils.readFileToString(file, Charset.forName("utf-8"));
+            addProperties(data);
+        } catch (NullPointerException e) {
+            throw new IOException("Unable to load property file : resources/" + property);
+        }
+
     }
 
     private void addProperties(String file) {
