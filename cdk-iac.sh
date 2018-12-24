@@ -33,12 +33,12 @@ JAVA_COMMAND_FULL="java -cp target/classes:$(cat .classpath.txt)"
 
 CDK_COMMAND="${c}"
 TEMPLATE="io.haskins.cdkiac.template.${t}"
-APPLICATION="-Dapplication=${a}"
-DTAP="-Ddtap=${d}"
+APPLICATION="-Dapplication=${a} " # space at the end needed
+DTAP="-Ddtap=${d} " # space at the end needed
 
 VPC=""
 if [[ -n ${v} ]]; then
-    VPC="-Dvpc=${v}"
+    VPC="-Dvpc=${v} " # space at the end needed
 fi
 
 PROFILE=""
@@ -46,5 +46,5 @@ if [[ ${profiles} == 1 ]]; then
     PROFILE="--profile ${d}"
 fi
 
-echo "Running command : cdk ${PROFILE} --app \"${JAVA_COMMAND} ${APPLICATION} ${DTAP} ${VPC} ${TEMPLATE}\" ${c}"
-# exec cdk ${PROFILE} --app "${JAVA_COMMAND_FULL} ${APPLICATION} ${DTAP} ${VPC} ${TEMPLATE}" ${c}
+echo "Running command : cdk ${PROFILE} --app \"${JAVA_COMMAND} ${APPLICATION}${DTAP}${VPC}${TEMPLATE}\" ${c}"
+exec cdk ${PROFILE} --app "${JAVA_COMMAND_FULL} ${APPLICATION}${DTAP}${VPC}${TEMPLATE}" ${c}
