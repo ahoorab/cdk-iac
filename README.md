@@ -61,14 +61,18 @@ Note: DTAP might be renamed in the future.
 
 
 ## usage
+The easiest way of using the tool if from the command line with Maven. Whenever you make a Java code change run this 
+command ```mvn compile```.
+
 To perform a CDK action against one of your applications you would do the following 
 
-```./cdk-iac.sh -c synth -t BeanstalkTemplate -a backoffice -d dev```
+```./cdk-iac.sh synth BeanstalkTemplate backoffice dev```
 
-* -c CDK Command e.g synth, deploy
-* -t Name of the template to stamp out
-* -a Name to give the application
-* -d Your DTAP e.g. dev for your developer account
+* CDK Command e.g synth, deploy
+* Name of the template
+* Name of the application
+* DTAP
+Optional flags are:
 * -v If you have multiple vpcs in an AWS then you can use this flag to target specific a VPC if required
 * -p Flag to indicate you want to use an AWS Credentials profile.
 
