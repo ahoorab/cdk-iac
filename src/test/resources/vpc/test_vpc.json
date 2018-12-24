@@ -1,0 +1,5 @@
+{
+  "keypair": "vpc-key",
+  "subnet": "subnet-12345678",
+  "instance_type": "t2.medium"
+}
