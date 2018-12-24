@@ -7,7 +7,7 @@
 
     <groupId>io.haskins</groupId>
     <artifactId>cdk-iac</artifactId>
-    <version>0.3</version>
+    <version>0.5</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
