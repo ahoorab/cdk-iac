@@ -32,7 +32,7 @@ public class IamPolicyGenerator {
      * Generates a Service Trust Policy for the passed principal
      * @param service e.g. ec2.amazonaws.com
      * @return  <pre>
-     *     {
+     * {
      *   "Version": "2012-10-17",
      *   "Statement": [
      *     {
@@ -50,6 +50,23 @@ public class IamPolicyGenerator {
         return (ObjectNode)createServiceTrustPolicy(Collections.singletonList(service));
     }
 
+    /**
+     * Generatest a single Policy Statement.
+     * @param effect Allow or Deny
+     * @param actions A collection of actions
+     * @param resources A collection of resources
+     * @return   <pre>
+     * {
+     *   "Version": "2012-10-17",
+     *   "Statement": [
+     *   {
+     *     Effect: ">>effect>>",
+     *     Action: [">>action<<"],
+     *     Resources: [">>resource<<"]
+     *   }
+     * }
+     *  </pre>
+     */
     public static JsonNode getPolicyStatement(String effect, List<String> actions, List<String> resources) {
         return createStatementJsonNode(effect, actions, resources);
     }
@@ -110,7 +127,7 @@ public class IamPolicyGenerator {
                 .append("{")
                 .append("\"Effect\": ").append("\"").append(effect).append("\",")
                 .append("\"Action\": [").append(escapeStrings(actions)).append("],")
-                .append("\"Resources\":[").append(escapeStrings(resources)).append("]")
+                .append("\"Resource\":[").append(escapeStrings(resources)).append("]")
                 .append("}");
 
         return createJsonNode(json.toString());
