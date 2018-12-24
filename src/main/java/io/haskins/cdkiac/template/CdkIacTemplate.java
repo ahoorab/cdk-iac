@@ -26,6 +26,9 @@ abstract class CdkIacTemplate {
     private static final String DTAP = "dtap";
     private static final String VPC = "vpc";
     private static final String APPLICATION = "application";
+    private static final String DRY_RUN = "dryrun";
+
+    private static final String RESOURCE_FILE_PATTERN = "%s/%s.json";
 
     /**
      * Implementation of this method would provide the Stack Class that make up the application
@@ -34,6 +37,7 @@ abstract class CdkIacTemplate {
     abstract void defineStacks(App app);
 
     final AppProps appProps = new AppProps();
+    private boolean dryRun = false;
 
     /**
      * Default constructor
@@ -45,7 +49,9 @@ abstract class CdkIacTemplate {
 
             App app = new App();
             defineStacks(app);
-            app.run();
+            if (!dryRun) {
+                app.run();
+            }
         } catch(IOException ioe) {
             logger.error(ioe.getMessage());
             System.exit(1);
@@ -60,16 +66,20 @@ abstract class CdkIacTemplate {
         appProps.addProp("app_id", System.getProperty(APPLICATION));
 
         if (System.getProperty(DTAP) != null && System.getProperty(DTAP).length() > 0) {
-            loadProperties(String.format("%s/%s.json", DTAP, System.getProperty(DTAP)));
+            loadProperties(String.format(RESOURCE_FILE_PATTERN, DTAP, System.getProperty(DTAP)));
             appProps.addProp("dtap", System.getProperty(DTAP));
         }
 
         if (System.getProperty(VPC) != null && System.getProperty(VPC).length() > 0) {
-            loadProperties(String.format("%s/%s.json", VPC, System.getProperty(VPC)));
+            loadProperties(String.format(RESOURCE_FILE_PATTERN, VPC, System.getProperty(VPC)));
             appProps.addProp("vpc", System.getProperty(VPC));
         }
 
-        loadProperties(String.format("%s/%s.json", APPLICATION, System.getProperty(APPLICATION)));
+        if (System.getProperty(DRY_RUN) != null && System.getProperty(DRY_RUN).length() > 0) {
+            dryRun = true;
+        }
+
+        loadProperties(String.format(RESOURCE_FILE_PATTERN, APPLICATION, System.getProperty(APPLICATION)));
     }
 
     private void loadProperties(String property) throws IOException {
