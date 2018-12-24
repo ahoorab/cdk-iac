@@ -2,6 +2,7 @@ package io.haskins.cdkiac.utils;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import io.haskins.cdkiac.exception.MissingPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,12 +80,15 @@ public class AppProps {
      * <p>Generates a unique ID based on the DTAP, Platform if provided, and Application id.</p>
      * @return  <p>Examples are: dtap-vpc-app_id  or   dtap-app_id</p>
      */
-    public String getUniqueId() {
+    public String getUniqueId() throws MissingPropertyException {
 
         StringBuilder id = new StringBuilder();
 
         if (props.containsKey("dtap")) {
             id.append(getPropAsString("dtap")).append("-");
+        } else {
+            logger.error("Missing dtap !");
+            System.exit(1);
         }
 
         if (props.containsKey("vpc")) {
@@ -93,6 +97,9 @@ public class AppProps {
 
         if (props.containsKey("app_id")) {
             id.append(getPropAsString("app_id"));
+        } else {
+            logger.error("Missing app_id !");
+            System.exit(1);
         }
 
         return id.toString();
@@ -114,11 +121,11 @@ public class AppProps {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///// private methods
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private String getPropertyByKey(String key) {
+    private String getPropertyByKey(String key) throws MissingPropertyException  {
 
         if (!props.containsKey(key)) {
             logger.error(String.format("Property %s not found", key));
-            System.exit(1);
+            throw new MissingPropertyException();
         }
 
         return this.props.get(key);
