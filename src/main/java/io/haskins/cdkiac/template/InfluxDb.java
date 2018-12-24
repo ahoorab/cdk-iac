@@ -1,5 +1,7 @@
 package io.haskins.cdkiac.template;
 
+import io.haskins.cdkiac.stack.StackException;
+import io.haskins.cdkiac.utils.MissingPropertyException;
 import software.amazon.awscdk.App;
 
 /**
@@ -7,16 +9,21 @@ import software.amazon.awscdk.App;
  */
 public class InfluxDb  extends CdkIacTemplate {
 
-    private InfluxDb() {
+    private InfluxDb() throws TemplateException {
         super();
     }
 
     @Override
-    void defineStacks(App app) {
+    void defineStacks(App app) throws MissingPropertyException, StackException {
         new io.haskins.cdkiac.stack.application.InfluxDb(app, appProps.getUniqueId(), appProps);
     }
 
     public static void main(final String[] args) {
-        new InfluxDb();
+
+        try {
+            new InfluxDb();
+        } catch (TemplateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
