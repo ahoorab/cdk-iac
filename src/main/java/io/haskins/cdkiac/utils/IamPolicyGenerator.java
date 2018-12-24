@@ -51,6 +51,28 @@ public class IamPolicyGenerator {
     }
 
     /**
+     * Generates a AWS Trust Policy for the passed principal
+     * @param arn e.g. ec2.amazonaws.com
+     * @return  <pre>
+     * {
+     *   "Version": "2012-10-17",
+     *   "Statement": [
+     *     {
+     *       "Effect": "Allow",
+     *       "Principal": {
+     *         "AWS": ">>arn<<"
+     *       },
+     *       "Action": "sts:AssumeRole"
+     *     }
+     *   ]
+     * }
+     * </pre>
+     */
+    public static ObjectNode getAwsTrustPolicy(String arn) {
+        return (ObjectNode)createAwsTrustPolicy(Collections.singletonList(arn));
+    }
+
+    /**
      * Generatest a single Policy Statement.
      * @param effect Allow or Deny
      * @param actions A collection of actions

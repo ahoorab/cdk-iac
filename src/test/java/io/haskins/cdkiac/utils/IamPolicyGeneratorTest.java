@@ -24,6 +24,17 @@ public class IamPolicyGeneratorTest {
     }
 
     @Test
+    public void getAwsTrustPolicy() {
+
+        String expected = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"arn:aws:iam::0123456789:user/mark.haskins\"]},\"Action\":\"sts:AssumeRole\"}]}";
+
+        ObjectNode policy = IamPolicyGenerator.getAwsTrustPolicy("arn:aws:iam::0123456789:user/mark.haskins");
+        String jsonPolicy = policy.toString();
+
+        Assert.assertEquals(expected, jsonPolicy);
+    }
+
+    @Test
     public void getPolicyStatement() {
 
         String expected = "{\"Effect\":\"Allow\",\"Action\":[\"s3:List\",\"s3:Get\"],\"Resource\":[\"*\"]}";
