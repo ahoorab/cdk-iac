@@ -109,7 +109,7 @@ public class AppProps {
      * returns the number of properties
      * @return int value
      */
-    int size() { return this.props.size(); }
+    public int size() { return this.props.size(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///// private methods

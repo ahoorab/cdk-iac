@@ -15,7 +15,7 @@ public class MyVpc extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app) throws MissingPropertyException, StackException {
+    protected void defineStacks(App app) throws MissingPropertyException, StackException {
         new VpcWithPeering(app, appProps.getUniqueId(), appProps);
     }
 

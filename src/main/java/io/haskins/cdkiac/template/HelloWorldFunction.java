@@ -15,7 +15,7 @@ public class HelloWorldFunction extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app) throws MissingPropertyException, StackException {
+    protected void defineStacks(App app) throws MissingPropertyException, StackException {
         new LambdaApiGateway(app, appProps.getUniqueId(), appProps);
     }
 

@@ -14,7 +14,7 @@ public class InfluxDb  extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app) throws MissingPropertyException, StackException {
+    protected void defineStacks(App app) throws MissingPropertyException, StackException {
         new io.haskins.cdkiac.stack.application.InfluxDb(app, appProps.getUniqueId(), appProps);
     }
 

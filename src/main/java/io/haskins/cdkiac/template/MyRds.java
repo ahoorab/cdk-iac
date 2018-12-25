@@ -15,7 +15,7 @@ public class MyRds extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app) throws MissingPropertyException, StackException {
+    protected void defineStacks(App app) throws MissingPropertyException, StackException {
         new RDS(app, appProps.getUniqueId(), appProps);
     }
 

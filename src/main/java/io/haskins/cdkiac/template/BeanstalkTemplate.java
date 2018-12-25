@@ -15,7 +15,7 @@ public class BeanstalkTemplate extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app) throws MissingPropertyException, StackException {
+    protected void defineStacks(App app) throws MissingPropertyException, StackException {
         new BeanstalkApiGateway(app, appProps.getUniqueId(), appProps);
     }
 

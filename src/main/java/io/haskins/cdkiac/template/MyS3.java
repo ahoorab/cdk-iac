@@ -15,7 +15,7 @@ public class MyS3 extends CdkIacTemplate {
     }
 
     @Override
-    void defineStacks(App app) throws MissingPropertyException, StackException {
+    protected void defineStacks(App app) throws MissingPropertyException, StackException {
         new S3(app, appProps.getUniqueId(), appProps);
     }
 
