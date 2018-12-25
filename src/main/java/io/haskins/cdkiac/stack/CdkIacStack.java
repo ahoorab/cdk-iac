@@ -11,12 +11,13 @@ import software.amazon.awscdk.StackProps;
  */
 public abstract class CdkIacStack extends Stack {
 
-    protected abstract void defineResources() throws StackException;
-
     protected final AppProps appProps;
 
     protected final String uniqueId;
     protected final String stackName;
+
+    protected abstract void defineResources() throws StackException;
+
 
     protected CdkIacStack(final App parent,
                           final String name,

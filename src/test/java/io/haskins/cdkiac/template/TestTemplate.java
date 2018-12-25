@@ -11,6 +11,8 @@ class TestTemplate extends CdkIacTemplate {
     }
 
     void defineStacks(App app) throws MissingPropertyException, StackException {
-
+        /*
+         * Not required for any tests at this time
+         */
     }
 }

@@ -2,7 +2,6 @@
 
 **20/12/18 - Updated to 0.21.0**
 
-
 ## overview 
 The idea behind this project is to take the recently announced AWS [CDK](https://awslabs.github.io/aws-cdk/index.html)
 and try and build a multi application management tool around it.
@@ -13,8 +12,7 @@ programmatically generating CloudFormation templates, and creating the stacks.
 I like what they have done so far with CDK, and I'm sure that as it moves closer to version 1.0.0 it will increase in
 coverage and functionality. In the mean time ...
 
-
-## What's this project about?
+## What's this project about
 The idea of this project is to take CDK and build a multi CDK App/Stack / Application management and deployment application.
 What I wanted to achieve is to be able to create a CDK Stack that could be reused, along with CDK App that could also be
 reused.
@@ -25,40 +23,36 @@ my needs without have to duplicate code across multiple stacks.
 
 
 **Presently with CDK:**
-* when you create an 'main' class that you add the Stack too, you hardcode the name of the CloudFormation stack
-* you can add parameters to the cdk.json, but this isn't really scalable across a large number of applications in 
-multiple AWS account and VPCs.
-* there are other ways of passing parameters in, but these could still be annoying to manage
+*  when you create an 'main' class that you add the Stack too, you hardcode the name of the CloudFormation stack
+*  you can add parameters to the cdk.json, but this isn't really scalable across a large number of applications in multiple AWS account and VPCs.
+*  there are other ways of passing parameters in, but these could still be annoying to manage
 
 **How this project attempts to solve these potential problems:**
-* the 'main' class (or template as this project refers to them) can be reused across similar applications
-* the name of the CloudFormation stack is dynamic even when using the same Template file
-* You can define properties in external files to provide good scalability for applications/DTAPs and VPCs.
+*  the 'main' class (or template as this project refers to them) can be reused across similar applications
+*  the name of the CloudFormation stack is dynamic even when using the same Template file
+*  You can define properties in external files to provide good scalability for applications/DTAPs and VPCs.
 
 # How to use
 Using the tool is very simple.
-1. git clone the project
-2. remove my Template, Stacks and resource files if you will not be needing them*
-3. add your own Template and Stack files along with your own resources
-4. run the cdk-iac.sh script (see below)
+1.  git clone the project
+2.  remove my Template, Stacks and resource files if you will not be needing them*
+3.  add your own Template and Stack files along with your own resources
+4.  run the cdk-iac.sh script (see below)
 
 *If you want to use my Stacks as examples to get yourself started feel free.
-
 
 # Implementation
 ## Structure
 ### Java classes
-* stack : Contains the classes that define the CloudFormation stacks
-* template : The 'main' classes that CDK calls initially, that defines an Application structure
-* utils : Contains global utility classes
-
+*  stack : Contains the classes that define the CloudFormation stacks
+*  template : The 'main' classes that CDK calls initially, that defines an Application structure
+*  utils : Contains global utility classes
 
 ### Resources
-* application : Where to store properties files for individual applications
-* dtap : Where to store AWS account specific properties
-* vpc : Where to store VPC specific properties
+*  application : Where to store properties files for individual applications
+*  dtap : Where to store AWS account specific properties
+*  vpc : Where to store VPC specific properties
 Note: DTAP might be renamed in the future.
-
 
 ## usage
 The easiest way of using the tool if from the command line with Maven. Whenever you make a Java code change run this 
@@ -68,24 +62,23 @@ To perform a CDK action against one of your applications you would do the follow
 
 ```./cdk-iac.sh synth BeanstalkTemplate backoffice dev```
 
-* CDK Command e.g synth, deploy
-* Name of the template
-* Name of the application
-* DTAP
-Optional flags are:
-* -v If you have multiple vpcs in an AWS then you can use this flag to target specific a VPC if required
-* -p Flag to indicate you want to use an AWS Credentials profile.
+*  CDK Command e.g synth, deploy
+*  Name of the template
+*  Name of the application
+*  DTAP
 
+Optional flags are:
+*  -v If you have multiple vpcs in an AWS then you can use this flag to target specific a VPC if required
+*  -p Flag to indicate you want to use an AWS Credentials profile.
 
 ### What happens when you use the above command?
-1. The .sh script runs the Java class indicated by the -t flag and passes in the properties
-2. The 'main' method instaniates the class which calls 'super' through to CdkIacTemplate
-3. CdkIacTemplate loads any properties defined in the resources folder
-4. Properties are loaded in this order:- Dtap, Vpc, Application. Duplicate keys will be overridden by newer properties.
-This allows you define an EC2 KeyPair in the DTAP, but override it with a value in a Vpc.
-5. A call is made to the original class to get the Stack definitions.
-6. run is then Invoked on the CDK App
-7. CDK then performs whichever command you gave it
+1.  The .sh script runs the Java class indicated by the -t flag and passes in the properties
+2.  The 'main' method instaniates the class which calls 'super' through to CdkIacTemplate
+3.  CdkIacTemplate loads any properties defined in the resources folder
+4.  Properties are loaded in this order:- Dtap, Vpc, Application. Duplicate keys will be overridden by newer properties. This allows you define an EC2 KeyPair in the DTAP, but override it with a value in a Vpc.
+5.  A call is made to the original class to get the Stack definitions.
+6.  run is then Invoked on the CDK App
+7.  CDK then performs whichever command you gave it
 
 ### Creating two applications using the same Template, but with different configurations
 By defining application properties in the resources section you can use the same Template that creates similar stacks, but
@@ -94,13 +87,13 @@ with different configurations.
 When using the included BeanstalkTemplate for example, the following resources will be created when the BeanstalkApiGateway
 stack is called:
 
-* IAM Roles
-* Beanstalk Application and Environment
-* API Gateway RestAPI, Resource and Method
+*  IAM Roles
+*  Beanstalk Application and Environment
+*  API Gateway RestAPI, Resource and Method
 
 In the /resources/application folder you can see that I have defined two applications:
-* microservice
-* wordpress
+*  microservice
+*  wordpress
 
 If I run the command ```./cdk-iac.sh -c synth -t BeanstalkTemplate -a wordpress -d dev``` Beanstalk will be configured
 with a PHP solution stack and a t2.small instance. 
@@ -112,15 +105,14 @@ Gateway as an example) then you simply need to define the properties for the ind
 'stamping' out new application infrastructure in a standard and consistent process very easy. And don't forget that by
 used the power of CDK you can always update these applications easily.
 
-
 ## Created AWS Resource
 ### Unique ID
 Part of my requirements were to enforce a consistent naming convention across all stacks and created resources. There is
 a method in the AppProps class that will generate a unique id based on the following data:
 
-* DTAP
-* VPC (if provided)
-* Application Name
+*  DTAP
+*  VPC (if provided)
+*  Application Name
 
 If you provide all the above details the unique id would be **dtap-vpc-appname**. If you miss out VPC then it would be 
 **dtap-appname**. Most of my example stacks use this unique ID to name all of their resources. My thinking behind this
