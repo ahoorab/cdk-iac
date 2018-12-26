@@ -1,6 +1,6 @@
 # cdk-iac
 
-**20/12/18 - Updated to 0.21.0**
+**20/12/18 - Updated to CDK 0.21.0**
 
 ## overview 
 The idea behind this project is to take the recently announced AWS [CDK](https://awslabs.github.io/aws-cdk/index.html)
@@ -20,7 +20,6 @@ reused.
 I work as a Cloud Engineer so I would love to have a single place where I can store and mange all of my AWS 
 Resources from. I also want to be able to normalise the stacks by defining Constructs that perform tasks specific to 
 my needs without have to duplicate code across multiple stacks. 
-
 
 **Presently with CDK:**
 *  when you create an 'main' class that you add the Stack too, you hardcode the name of the CloudFormation stack
