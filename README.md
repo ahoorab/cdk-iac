@@ -72,7 +72,7 @@ Optional flags are:
 *  -p Flag to indicate you want to use an AWS Credentials profile.
 
 ### What happens when you use the above command?
-1.  The .sh script runs the Java class indicated by the -t flag and passes in the properties
+1.  The .sh script runs the Java class and passes in the properties
 2.  The 'main' method instaniates the class which calls 'super' through to CdkIacTemplate
 3.  CdkIacTemplate loads any properties defined in the resources folder
 4.  Properties are loaded in this order:- Dtap, Vpc, Application. Duplicate keys will be overridden by newer properties. This allows you define an EC2 KeyPair in the DTAP, but override it with a value in a Vpc.
@@ -95,9 +95,9 @@ In the /resources/application folder you can see that I have defined two applica
 *  microservice
 *  wordpress
 
-If I run the command ```./cdk-iac.sh -c synth -t BeanstalkTemplate -a wordpress -d dev``` Beanstalk will be configured
+If I run the command ```./cdk-iac.sh synth BeanstalkTemplate wordpress dev``` Beanstalk will be configured
 with a PHP solution stack and a t2.small instance. 
-Running the command ```./cdk-iac.sh -c synth -t BeanstalkTemplate -a microservice -d dev``` will configured Beanstalk 
+Running the command ```./cdk-iac.sh synth BeanstalkTemplate microservice dev``` will configured Beanstalk 
 using a Python Solution Stack and a m5.medium instance.
 
 This means that you can define a consistent infrastructure for your mircoservices (beanstalk behind API
