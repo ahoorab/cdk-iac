@@ -44,7 +44,7 @@ public class SQS  extends CdkIacStack {
                 .withSubscription(Collections.singletonList(queue.getQueueArn()))
                 .build());
 
-        CfnSubscription cfnSubscription = new CfnSubscription(this, "TopicSubcription", CfnSubscriptionProps.builder()
+        new CfnSubscription(this, "TopicSubcription", CfnSubscriptionProps.builder()
                 .withTopicArn(topic.getTopicArn())
                 .withEndpoint("test@test.com")
                 .withProtocol("email")

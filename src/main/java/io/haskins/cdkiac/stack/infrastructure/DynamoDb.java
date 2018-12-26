@@ -5,8 +5,7 @@ import io.haskins.cdkiac.stack.StackException;
 import io.haskins.cdkiac.utils.AppProps;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.dynamodb.CfnTable;
-import software.amazon.awscdk.services.dynamodb.CfnTableProps;
+import software.amazon.awscdk.services.dynamodb.*;
 
 public class DynamoDb extends CdkIacStack {
 
@@ -27,7 +26,7 @@ public class DynamoDb extends CdkIacStack {
 
     protected void defineResources() throws StackException {
 
-        CfnTable table = new CfnTable(this, "DynamoDb", CfnTableProps.builder()
+        new CfnTable(this, "DynamoDb", CfnTableProps.builder()
                 .withTableName(uniqueId)
                 .withProvisionedThroughput(CfnTable.ProvisionedThroughputProperty.builder()
                         .withReadCapacityUnits(1)

@@ -38,7 +38,7 @@ public class Route53 extends CdkIacStack {
                         .build())
                 .build());
 
-        CfnRecordSet recordSet = new CfnRecordSet(this, "Mail", CfnRecordSetProps.builder()
+        new CfnRecordSet(this, "Mail", CfnRecordSetProps.builder()
                 .withHostedZoneId(zone.getHostedZoneId())
                 .withName("mail.example.com")
                 .withType("A")
