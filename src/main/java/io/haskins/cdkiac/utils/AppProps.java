@@ -26,6 +26,7 @@ public class AppProps {
     /**
      * Get a property value as a String
      * @param key key of the value
+     * @exception MissingPropertyException Thrown if a property can not be found
      * @return value as a string
      */
     public String getPropAsString(String key) throws MissingPropertyException {
@@ -36,7 +37,7 @@ public class AppProps {
      *
      * @param key key of the value
      * @return value as an Integer
-     * @exception NumberFormatException will be thrown if the value can not be parsed as an Int
+     * @exception MissingPropertyException will be thrown if the value can not be parsed as an Int
      */
     public Integer getPropAsInteger(String key) throws MissingPropertyException {
         return Integer.parseInt(getPropertyByKey(key));
@@ -46,6 +47,7 @@ public class AppProps {
      *
      * @param key key of the value
      * @return value as a Boolean
+     * @exception MissingPropertyException Thrown if a property can not be found
      */
     public Boolean getPropAsBoolean(String key) throws MissingPropertyException {
         return Boolean.parseBoolean(getPropertyByKey(key));
@@ -55,6 +57,7 @@ public class AppProps {
      *
      * @param key key of the value
      * @return returns a List of Strings. This is done by Splitting the string around any commas
+     * @exception MissingPropertyException Thrown if a property can not be found
      */
     public List<String> getPropAsStringList(String key) throws MissingPropertyException {
         String value = getPropertyByKey(key);
@@ -65,6 +68,7 @@ public class AppProps {
      *
      * @param key key of the value
      * @return returns a List of Objects. This is done by Splitting the string around any commas
+     * @exception MissingPropertyException Thrown if a property can not be found
      */
     public List<Object> getPropAsObjectList(String key) throws MissingPropertyException {
         String value = getPropertyByKey(key);
@@ -74,6 +78,7 @@ public class AppProps {
     /**
      * <p>Generates a unique ID based on the DTAP, Platform if provided, and Application id.</p>
      * @return  <p>Examples are: dtap-vpc-app_id  or   dtap-app_id</p>
+     * @exception MissingPropertyException Thrown if a property can not be found
      */
     public String getUniqueId() throws MissingPropertyException {
 

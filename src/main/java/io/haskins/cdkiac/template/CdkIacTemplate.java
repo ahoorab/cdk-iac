@@ -28,12 +28,18 @@ abstract class CdkIacTemplate {
 
     private static final String RESOURCE_FILE_PATTERN = "%s/%s.json";
 
-    protected final AppProps appProps = new AppProps();
     private boolean dryRun = false;
+
+    /**
+     * An instance of AppProps
+     */
+    protected final AppProps appProps = new AppProps();
 
     /**
      * Implementation of this method would provide the Stack Class that make up the application
      * @param app CDK App
+     * @throws MissingPropertyException Thrown if there was a problem getting a Property
+     * @throws StackException Thrown if there was a problem creating the stack
      */
     protected abstract void defineStacks(App app) throws MissingPropertyException, StackException;
 

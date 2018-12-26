@@ -38,7 +38,7 @@ public class IamPolicyGenerator {
      *     {
      *       "Effect": "Allow",
      *       "Principal": {
-     *         "Service": ">>service<<"
+     *         "Service": "service"
      *       },
      *       "Action": "sts:AssumeRole"
      *     }
@@ -60,7 +60,7 @@ public class IamPolicyGenerator {
      *     {
      *       "Effect": "Allow",
      *       "Principal": {
-     *         "AWS": ">>arn<<"
+     *         "AWS": "arn"
      *       },
      *       "Action": "sts:AssumeRole"
      *     }
@@ -82,9 +82,9 @@ public class IamPolicyGenerator {
      *   "Version": "2012-10-17",
      *   "Statement": [
      *   {
-     *     Effect: ">>effect>>",
-     *     Action: [">>action<<"],
-     *     Resources: [">>resource<<"]
+     *     Effect: "effect",
+     *     Action: ["action"],
+     *     Resources: ["resource"]
      *   }
      * }
      *  </pre>
@@ -93,6 +93,11 @@ public class IamPolicyGenerator {
         return createStatementJsonNode(effect, actions, resources);
     }
 
+    /**
+     * Creates a valid IAM Policy Document from the passed statements
+     * @param statements collection of IAM Policy Statements
+     * @return a valid policy document object
+     */
     public static ObjectNode getPolicyDocument(List<JsonNode> statements) {
 
         ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
