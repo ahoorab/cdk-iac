@@ -17,6 +17,8 @@ import software.amazon.awscdk.services.elasticbeanstalk.CfnEnvironmentProps;
 import software.amazon.awscdk.services.iam.*;
 
 import com.google.common.collect.ImmutableMap;
+import software.amazon.awscdk.services.kms.EncryptionKey;
+import software.amazon.awscdk.services.kms.EncryptionKeyRefProps;
 
 import java.util.ArrayList;
 import java.util.Arrays;
