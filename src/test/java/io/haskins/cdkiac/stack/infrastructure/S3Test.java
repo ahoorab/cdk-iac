@@ -3,8 +3,6 @@ package io.haskins.cdkiac.stack.infrastructure;
 import io.haskins.cdkiac.stack.BaseTest;
 import io.haskins.cdkiac.stack.StackException;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * this test is disabled at the moment while work out the best way of testing a stack
