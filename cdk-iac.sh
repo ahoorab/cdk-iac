@@ -9,10 +9,20 @@ usage() {
     exit 1;
 }
 
-while getopts ":v:p" o; do
+CMD_OPTIONS=""
+
+while getopts ":v:-:p-" o; do
     case "${o}" in
         v) v=${OPTARG};;
-        p) profiles=1;;
+        -)
+           case "${OPTARG}" in
+               profile) profiles=1;;
+               trace) CMD_OPTIONS+=" --trace";;
+               strict) CMD_OPTIONS+=" --strict";;
+               ignore-errors) CMD_OPTIONS+=" --ignore-errors";;
+               json) CMD_OPTIONS+=" --json";;
+               output) CMD_OPTIONS+=" --output ${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ));;
+           esac;;
     esac
 done
 shift $((OPTIND-1))
@@ -34,10 +44,9 @@ if [[ -n ${v} ]]; then
     VPC="-Dvpc=${v} " # space at the end needed
 fi
 
-PROFILE=""
 if [[ ${profiles} == 1 ]]; then
-    PROFILE="--profile $4"
+    CMD_OPTIONS+=" --profile $4"
 fi
 
-echo "Running command : cdk ${PROFILE} --app \"${JAVA_COMMAND} ${APPLICATION} ${DTAP}${VPC}${TEMPLATE}\" ${CDK_COMMAND}"
-exec cdk ${PROFILE} --app "${JAVA_COMMAND_FULL} ${APPLICATION} ${DTAP}${VPC}${TEMPLATE}" ${CDK_COMMAND}
+echo "Running command : cdk ${CMD_OPTIONS} --app \"${JAVA_COMMAND} ${APPLICATION} ${DTAP}${VPC}${TEMPLATE}\" ${CDK_COMMAND}"
+exec cdk ${CMD_OPTIONS} --app "${JAVA_COMMAND_FULL} ${APPLICATION} ${DTAP}${VPC}${TEMPLATE}" ${CDK_COMMAND}
