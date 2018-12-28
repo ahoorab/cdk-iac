@@ -30,7 +30,7 @@ public class RDS extends CdkIacStack {
         super(parent, name, props, appProps);
     }
 
-    protected void defineResources() throws StackException{
+    protected void defineResources() throws StackException {
 
         try {
 
