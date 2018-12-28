@@ -29,7 +29,8 @@ my needs without have to duplicate code across multiple stacks.
 **How this project attempts to solve these potential problems:**
 *  the 'main' class (or template as this project refers to them) can be reused across similar applications
 *  the name of the CloudFormation stack is dynamic even when using the same Template file
-*  You can define properties in external files to provide good scalability for applications/DTAPs and VPCs.
+*  uou can define properties in external files to provide good scalability for applications/DTAPs and VPCs.
+*  you place everything under Source Control so nothing gets lost, and changes should be reviewed.
 
 # How to use
 Using the tool is very simple.
@@ -49,31 +50,40 @@ Using the tool is very simple.
 
 ### Resources
 *  application : Where to store properties files for individual applications
-*  dtap : Where to store AWS account specific properties
+*  [dtap](https://en.wikipedia.org/wiki/Development,_testing,_acceptance_and_production) : Where to store AWS account specific properties
 *  vpc : Where to store VPC specific properties
-Note: DTAP might be renamed in the future.
+**Note**: DTAP might be renamed in the future.
 
 ## usage
-The easiest way of using the tool if from the command line with Maven. Whenever you make a Java code change run this 
+The easiest way of using the tool is from the command line with Maven. Whenever you make a Java code change run this 
 command ```mvn compile```.
 
 To perform a CDK action against one of your applications you would do the following 
 
-```./cdk-iac.sh synth BeanstalkTemplate backoffice dev```
+```./cdk-iac.sh [options] synth BeanstalkTemplate backoffice dev```
 
-*  CDK Command e.g synth, deploy
+*  CDK Command e.g synth, deploy, etc
 *  Name of the template
 *  Name of the application
 *  DTAP
 
-Optional flags are:
+**Optional flagz**
 *  -v If you have multiple vpcs in an AWS then you can use this flag to target specific a VPC if required
-*  -p Flag to indicate you want to use an AWS Credentials profile.
+
+**Cdk Options**
+You can also provide the following CDK options when constructing the command. To use any of the following you will need
+to prefix them with -- e.g --trace:
+* profile (replaces my -p option but still uses the DTAP for the profile name)
+* trace
+* strict
+* ignore-errors
+* json
+* output
 
 ### What happens when you use the above command?
 1.  The .sh script runs the Java class and passes in the properties
-2.  The 'main' method instaniates the class which calls 'super' through to CdkIacTemplate
-3.  CdkIacTemplate loads any properties defined in the resources folder
+2.  The 'main' method instantiates the class which calls 'super' through to CdkIacTemplate
+3.  CdkIacTemplate loads any properties defined in the resources folders
 4.  Properties are loaded in this order:- Dtap, Vpc, Application. Duplicate keys will be overridden by newer properties. This allows you define an EC2 KeyPair in the DTAP, but override it with a value in a Vpc.
 5.  A call is made to the original class to get the Stack definitions.
 6.  run is then Invoked on the CDK App
@@ -103,7 +113,7 @@ using a Python Solution Stack and a m5.medium instance.
 This means that you can define a consistent infrastructure for your mircoservices (beanstalk behind API
 Gateway as an example) then you simply need to define the properties for the individual applications. This makes 
 'stamping' out new application infrastructure in a standard and consistent process very easy. And don't forget that by
-using the power of CDK you can always update these applications easily.
+using the power of CDK you can always update these applications later easily.
 
 ## Created AWS Resource
 ### Unique ID
@@ -129,10 +139,12 @@ ability to include the region this might become **dev-eu-west-1-wordpress**, whi
 You define a DTAP when you call the **cdk-iac.sh** file, this is currently used to read the appropriate DTAP properties from 
 the resources directory, and form part of the unique id. The command uses whatever API keys are configured as
 [default] in the .aws/credentials file.
-To use a set of credentials that have been defined as a profile in your credentials file the you can use the -p
-flag. When this flag is added the script will attempt to use a profile with the same name as the passed DTAP.
+To use a set of credentials that have been defined as a profile in your credentials file then you can use the CDK --profile
+flag. I've overridden this functionality so that when this flag is added, the script will attempt to use a profile with
+the same name as the passed DTAP. This better fits my needs, and to me makes sense having the profile the same as the DTAP.
 
 # My Stacks
 In the Stacks directory you will find some stacks that I have created by way of seeing if it is possible to migrate our 
 existing AWS Resource creation systems (CloudFormation, Ansible, AWS SDK) to use CDK. It is not my intention at this 
-time to create Java examples of every possible CfnResource, but I do expect this to fill out as I do my migrations, and test other aspects of hte code.
+time to create Java examples of every possible CfnResource, but I do expect this to fill out as I do my migrations, and
+test other aspects of the code.
