@@ -104,10 +104,10 @@ In the /resources/application folder you can see that I have defined two applica
 *  microservice
 *  wordpress
 
-If I run the command ```./cdk-iac.sh synth BeanstalkTemplate wordpress dev``` Beanstalk will be configured
+If I run the command   ```./cdk-iac.sh synth BeanstalkTemplate wordpress dev```   Beanstalk will be configured
 with a PHP solution stack and a t2.small instance.
 
-Running the command ```./cdk-iac.sh synth BeanstalkTemplate microservice dev``` will configure Beanstalk 
+Running the command   ```./cdk-iac.sh synth BeanstalkTemplate microservice dev```   will configure Beanstalk 
 using a Python Solution Stack and a m5.medium instance.
 
 This means that you can define a consistent infrastructure for your mircoservices (beanstalk behind API
@@ -131,7 +131,7 @@ a convention, it is easy to see what belongs to what.
 
 As it stands I can see potential problems with multi region, especially for services that don't have the concept of 
 different regions, e.g IAM. so I may need to add a Region flag that adds a region to the unique Id in the future.
-An example of this would be if you wanted to deploy a Wordpress application into two different regions, as it stands you
+An example of this would be if you wanted to deploy a WordPress application into two different regions, as it stands you
 couldn't as the script would try and create IAM resources will the same name twice e.g **dev-wordpress**. By adding the
 ability to include the region this might become **dev-eu-west-1-wordpress**, which gets around this issue.
 
@@ -139,6 +139,7 @@ ability to include the region this might become **dev-eu-west-1-wordpress**, whi
 You define a DTAP when you call the **cdk-iac.sh** file, this is currently used to read the appropriate DTAP properties from 
 the resources directory, and form part of the unique id. The command uses whatever API keys are configured as
 [default] in the .aws/credentials file.
+
 To use a set of credentials that have been defined as a profile in your credentials file then you can use the CDK --profile
 flag. I've overridden this functionality so that when this flag is added, the script will attempt to use a profile with
 the same name as the passed DTAP. This better fits my needs, and to me makes sense having the profile the same as the DTAP.
