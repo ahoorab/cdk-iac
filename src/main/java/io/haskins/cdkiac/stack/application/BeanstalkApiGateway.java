@@ -26,6 +26,8 @@ package io.haskins.cdkiac.stack.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.haskins.cdkiac.construct.RestApiAndProxyMethod;
+import io.haskins.cdkiac.construct.RestApiAndProxyMethodProps;
 import io.haskins.cdkiac.stack.StackException;
 import io.haskins.cdkiac.utils.MissingPropertyException;
 import io.haskins.cdkiac.utils.AppProps;
@@ -113,19 +115,13 @@ public class BeanstalkApiGateway extends CdkIacStack {
                     ))
                     .build());
 
-            CfnRestApi restApi = new CfnRestApi(this, "RestApi", CfnRestApiProps.builder()
-                    .withName(uniqueId)
-                    .build());
-
-            CfnResource cfnResource = new CfnResource(this, "CfnRestApi", CfnResourceProps.builder()
-                    .withPathPart("{proxy+}")
-                    .withRestApiId(restApi.getRestApiId())
-                    .withParentId(restApi.getRestApiRootResourceId())
+            RestApiAndProxyMethod restApiAndProxyMethod = new RestApiAndProxyMethod(this, "RestApiAndProxyMethod", RestApiAndProxyMethodProps.builder()
+                    .withUniqueId(uniqueId)
                     .build());
 
             new CfnMethod(this, "RestApiMethod", CfnMethodProps.builder()
-                    .withRestApiId(restApi.getRestApiId())
-                    .withResourceId(cfnResource.getResourceId())
+                    .withRestApiId(restApiAndProxyMethod.getRestApi().getRestApiId())
+                    .withResourceId(restApiAndProxyMethod.getResource().getResourceId())
                     .withHttpMethod("ANY")
                     .withAuthorizationType("NONE")
                     .withRequestParameters(ImmutableMap.of("method.request.path.proxy", true))
