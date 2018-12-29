@@ -70,15 +70,13 @@ To perform a CDK action against one of your applications you would do the follow
 **Optional flagz**
 *  -v If you have multiple vpcs in an AWS then you can use this flag to target specific a VPC if required
 
-**Cdk Options**
-You can also provide the following CDK options when constructing the command. To use any of the following you will need
-to prefix them with -- e.g --trace:
-* profile (replaces my -p option but still uses the DTAP for the profile name)
-* trace
-* strict
-* ignore-errors
-* json
-* output
+**Cdk Options** : You can also provide the following CDK options when constructing the command.
+* --profile (replaces my -p option but still uses the DTAP for the profile name)
+* --trace
+* --strict
+* --ignore-errors
+* --json
+* --output
 
 ### What happens when you use the above command?
 1.  The .sh script runs the Java class and passes in the properties
