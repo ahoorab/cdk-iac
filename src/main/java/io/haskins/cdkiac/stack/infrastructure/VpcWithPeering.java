@@ -37,7 +37,6 @@ import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroupProps;
 import software.amazon.awscdk.services.autoscaling.CfnLaunchConfiguration;
 import software.amazon.awscdk.services.autoscaling.CfnLaunchConfigurationProps;
 import software.amazon.awscdk.services.ec2.*;
-import software.amazon.awscdk.services.ec2.cloudformation.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.logs.CfnLogGroup;
 import software.amazon.awscdk.services.logs.CfnLogGroupProps;
@@ -261,7 +260,7 @@ public class VpcWithPeering extends CdkIacStack {
                     .withVpcId(vpc.getVpcId())
                     .withSecurityGroupIngress(
                             Collections.singletonList(
-                                    SecurityGroupIngressResourceProps.builder().withCidrIp("127.0.0.1/32").withFromPort(22).withToPort(22).withIpProtocol("tcp").build())
+                                    CfnSecurityGroupIngressProps.builder().withCidrIp("127.0.0.1/32").withFromPort(22).withToPort(22).withIpProtocol("tcp").build())
                     )
                     .build());
 
@@ -271,8 +270,8 @@ public class VpcWithPeering extends CdkIacStack {
                     .withVpcId(vpc.getVpcId())
                     .withSecurityGroupIngress(
                             Arrays.asList(
-                                    SecurityGroupIngressResourceProps.builder().withCidrIp("0.0.0.0/0").withFromPort(80).withToPort(80).withIpProtocol("tcp").build(),
-                                    SecurityGroupIngressResourceProps.builder().withSourceSecurityGroupId(bastionSg.getSecurityGroupId()).withFromPort(22).withToPort(22).withIpProtocol("tcp").build()
+                                    CfnSecurityGroupIngressProps.builder().withCidrIp("0.0.0.0/0").withFromPort(80).withToPort(80).withIpProtocol("tcp").build(),
+                                    CfnSecurityGroupIngressProps.builder().withSourceSecurityGroupId(bastionSg.getSecurityGroupId()).withFromPort(22).withToPort(22).withIpProtocol("tcp").build()
                             )
                     )
                     .build());

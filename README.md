@@ -1,8 +1,9 @@
 # cdk-iac
 
+**24/01/19 - Updated to CDK 0.22.0**
+=======
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ce2687a9e0834453afd03e40752dd4d3)](https://app.codacy.com/app/markhaskins/cdk-iac?utm_source=github.com&utm_medium=referral&utm_content=githublemming/cdk-iac&utm_campaign=Badge_Grade_Dashboard)
 
-**20/12/18 - Updated to CDK 0.21.0**
 
 ## overview 
 The idea behind this project is to take the recently announced AWS [CDK](https://awslabs.github.io/aws-cdk/index.html)

@@ -41,7 +41,6 @@ import software.amazon.awscdk.services.autoscaling.CfnAutoScalingGroupProps;
 import software.amazon.awscdk.services.autoscaling.CfnLaunchConfiguration;
 import software.amazon.awscdk.services.autoscaling.CfnLaunchConfigurationProps;
 import software.amazon.awscdk.services.ec2.*;
-import software.amazon.awscdk.services.ec2.cloudformation.SecurityGroupIngressResourceProps;
 import software.amazon.awscdk.services.iam.*;
 
 public class InfluxDb extends CdkIacStack {
@@ -65,7 +64,7 @@ public class InfluxDb extends CdkIacStack {
 
         try {
 
-            VpcNetworkRef vpc = VpcNetworkRef.import_(this,"Vpc", VpcNetworkRefProps.builder()
+            IVpcNetwork vpc = VpcNetwork.import_(this,"Vpc", VpcNetworkImportProps.builder()
                     .withVpcId(appProps.getPropAsString("vpcId"))
                     .withAvailabilityZones(appProps.getPropAsStringList("availabilityZones"))
                     .withPublicSubnetIds(appProps.getPropAsStringList("elbSubnets"))
@@ -77,7 +76,7 @@ public class InfluxDb extends CdkIacStack {
                     .withGroupDescription("infuxdb-sg")
                     .withVpcId(vpc.getVpcId())
                     .withSecurityGroupIngress(
-                            Collections.singletonList(SecurityGroupIngressResourceProps.builder().withCidrIp(appProps.getPropAsString("myCidr")).withFromPort(8888).withToPort(8888).withIpProtocol("tcp").build())
+                            Collections.singletonList(CfnSecurityGroupIngressProps.builder().withCidrIp(appProps.getPropAsString("myCidr")).withFromPort(8888).withToPort(8888).withIpProtocol("tcp").build())
                     ).build());
 
             CfnEIP eip = new CfnEIP(this, "influxdbeip");
