@@ -58,11 +58,11 @@ public class RDS extends CdkIacStack {
 
         try {
 
-            VpcNetworkRef vpc = VpcNetworkRef.import_(this,"Vpc", VpcNetworkRefProps.builder()
-                    .withVpcId(appProps.getPropAsString("vpc_id"))
-                    .withAvailabilityZones(appProps.getPropAsStringList("availability_zones"))
-                    .withPublicSubnetIds(appProps.getPropAsStringList("elb_subnets"))
-                    .withPrivateSubnetIds(appProps.getPropAsStringList("ec2_subnets"))
+            IVpcNetwork vpc = VpcNetwork.import_(this,"Vpc", VpcNetworkImportProps.builder()
+                    .withVpcId(appProps.getPropAsString("vpcId"))
+                    .withAvailabilityZones(appProps.getPropAsStringList("availabilityZones"))
+                    .withPublicSubnetIds(appProps.getPropAsStringList("elbSubnets"))
+                    .withPrivateSubnetIds(appProps.getPropAsStringList("ec2Subnets"))
                     .build());
 
             SecurityGroup sg = new SecurityGroup(this,"RdsSecurityGroup", SecurityGroupProps.builder()
