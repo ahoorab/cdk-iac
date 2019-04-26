@@ -144,7 +144,7 @@ public class InfluxDb extends CdkIacStack {
                     .withLaunchConfigurationName(lc.getLaunchConfigurationName())
                     .withMaxSize("1")
                     .withMinSize("1")
-                    .withVpcZoneIdentifier(appProps.getPropAsObjectList("ec2Subnets"))
+                    .withVpcZoneIdentifier(appProps.getPropAsStringList("ec2Subnets"))
                     .build());
 
 

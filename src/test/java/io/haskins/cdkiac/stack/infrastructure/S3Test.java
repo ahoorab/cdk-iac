@@ -29,6 +29,8 @@ public class S3Test extends BaseTest {
         } catch (StackException e) {
             Assert.fail("Failed to create stack");
         }
-        System.out.println(createYaml(s3.toCloudFormation()));
+//        System.out.println(createYaml(s3.toCloudFormation()));
+
+//        assert.SynthUtils.toCloudFormation(s3);
     }
 }
